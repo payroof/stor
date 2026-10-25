@@ -7,6 +7,8 @@
 
 Run an online store from a Google Sheet and get paid in crypto.
 
+**Try it now at [stor.top](https://stor.top)**: your store lives at `your-name.stor.top`. Or run your own server.
+
 [![CI](https://github.com/payroof/stor/actions/workflows/ci.yml/badge.svg)](https://github.com/payroof/stor/actions/workflows/ci.yml)
 [![crates.io](https://img.shields.io/crates/v/stortop.svg)](https://crates.io/crates/stortop)
 [![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](#license)
