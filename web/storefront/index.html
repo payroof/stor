@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    <meta name="theme-color" content="#ffffff" />
+    <title>Stor</title>
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script src="/store-theme.js"></script>
+    <script src="/theme.js"></script>
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="/store.css" />
+    <script type="module" src="/app.js"></script>
+  </head>
+  <body class="store">
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="topbar store-header">
+      <div class="topbar-inner">
+        <a class="brand store-brand" href="/" data-nav>
+          <svg class="store-mark" viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="1.5" y="1.5" width="21" height="21" rx="4.5" />
+            <path d="M1.5 9h21M1.5 15.5h21M9 9v13.5" />
+          </svg>
+          <span id="brand-name">Stor</span>
+        </a>
+        <div class="row" data-theme-slot>
+          <button
+            id="history-open"
+            class="icon-button toolbar-button"
+            type="button"
+            aria-label="Your orders"
+            data-icon="clock"
+          >
+            <span class="label">Orders</span>
+          </button>
+          <button
+            id="cart-open"
+            class="icon-button toolbar-button cart-trigger"
+            type="button"
+            aria-haspopup="dialog"
+            aria-label="Open bag"
+            data-icon="bag"
+          >
+            <span class="label">Bag</span><span id="cart-count">0</span>
+          </button>
+        </div>
+      </div>
+    </header>
+    <main id="main" class="store-main" tabindex="-1">
+      <div id="shop-view">
+        <p id="order-resume" class="resume" hidden>
+          <span data-icon="clock" aria-hidden="true"></span>
+          <span id="order-resume-text"></span>
+          <button id="order-resume-open" class="button small" type="button" data-icon="arrow">View</button>
+        </p>
+        <section id="store-intro" class="store-hero" hidden>
+          <h1 id="name" class="sr-only">Stor</h1>
+          <p id="description"></p>
+          <a id="website" class="store-website" target="_blank" rel="noopener noreferrer" hidden>
+            <span data-icon="external" aria-hidden="true"></span><span></span>
+          </a>
+        </section>
+        <p id="store-status" class="note warning" hidden>
+          <span data-icon="alert" aria-hidden="true"></span><span>Not taking orders</span>
+        </p>
+        <div class="catalog-tools">
+          <label id="search-field" class="search-field" hidden>
+            <span class="sr-only">Search products</span>
+            <span class="search-icon" data-icon="search" aria-hidden="true"></span>
+            <input id="search" type="search" placeholder="Search" autocomplete="off" />
+          </label>
+          <p id="catalog-count" class="catalog-count" aria-live="polite"></p>
+          <div id="catalog-view" class="segmented" role="group" aria-label="View" hidden>
+            <button type="button" data-view="cards" aria-pressed="true" data-icon="grid">Cards</button>
+            <button type="button" data-view="list" aria-pressed="false" data-icon="list">List</button>
+          </div>
+        </div>
+        <section id="catalog" class="product-grid" aria-label="Products">
+          <p class="loading-text"><span class="spinner" role="img" aria-label="Loading"></span></p>
+        </section>
+      </div>
+      <article id="product-view" class="product-page" hidden>
+        <div id="product-missing" hidden></div>
+        <div id="product-found" class="product-layout">
+          <div class="product-main">
+            <div id="product-gallery" class="gallery">
+              <div id="product-image" class="gallery-main" role="group" aria-label="Photos"></div>
+              <div id="product-thumbs" class="gallery-thumbs"></div>
+            </div>
+            <section id="product-about" class="product-about" aria-labelledby="about-heading">
+              <h2 id="about-heading" class="section-label">About</h2>
+              <p id="product-description" class="product-description"></p>
+              <dl id="product-facts" class="facts"></dl>
+            </section>
+          </div>
+          <div class="product-info">
+            <a id="product-back" class="back-link" href="/" data-nav data-icon="back">All products</a>
+            <h1 id="product-title" tabindex="-1"></h1>
+            <div id="product-status" class="row wrap"></div>
+            <section class="price-panel" aria-labelledby="price-heading">
+              <h2 id="price-heading" class="sr-only">Price</h2>
+              <div id="product-payments" class="price"></div>
+            </section>
+            <div id="product-buy" class="product-action">
+              <div class="quantity-control" role="group" aria-label="Quantity">
+                <button id="qty-minus" class="icon-button" type="button" data-icon="minus" data-icon-only>Decrease quantity</button>
+                <output id="qty-value" aria-live="polite">1</output>
+                <button id="qty-plus" class="icon-button" type="button" data-icon="plus" data-icon-only>Increase quantity</button>
+              </div>
+              <p id="product-total" class="buy-total"></p>
+              <button id="product-add" class="button" type="button" data-icon="bag">
+                Add to bag
+              </button>
+            </div>
+          </div>
+        </div>
+      </article>
+      <section id="order-panel" class="order-panel payment" hidden aria-labelledby="order-heading">
+        <div class="order-head">
+          <button id="order-back" class="icon-button" type="button" data-icon="back" data-icon-only>
+            Back to store
+          </button>
+          <div class="order-title">
+            <h2 id="order-heading" tabindex="-1">Order <span id="order-id" class="mono muted"></span></h2>
+            <p id="order-status-title" class="status-chip" aria-live="polite"></p>
+          </div>
+          <div class="row">
+            <div class="help-control">
+              <button
+                type="button"
+                class="icon-button help-trigger"
+                data-icon="info"
+                data-icon-only
+                data-overlay="order-info"
+                aria-controls="order-info"
+                aria-expanded="false"
+              >
+                Order details
+              </button>
+              <div id="order-info" class="help-content stack" role="tooltip" hidden>
+                <p id="payment-atomic" class="mono muted"></p>
+                <div id="payment-details" class="stack technical"></div>
+              </div>
+            </div>
+            <button id="order-refresh" type="button" class="icon-button" data-icon="refresh" data-icon-only>
+              Refresh status
+            </button>
+          </div>
+        </div>
+        <ol id="order-steps" class="stepper" aria-label="Order progress">
+          <li><span class="stepper-marker"></span><span>Bag</span></li>
+          <li><span class="stepper-marker"></span><span>Pay</span></li>
+          <li><span class="stepper-marker"></span><span>Confirm</span></li>
+          <li><span class="stepper-marker"></span><span>Delivered</span></li>
+        </ol>
+        <p id="order-help" class="order-help" hidden></p>
+        <div id="payment-area" class="pay-area">
+          <div id="payment-section" class="pay-card">
+            <div class="pay-row pay-heading">
+              <span id="payment-caption" class="caption muted">Send exactly</span>
+              <p id="payment-expiry" class="countdown" role="timer" hidden>
+                <span data-icon="clock" aria-hidden="true"></span><span id="expiry-time"></span>
+              </p>
+            </div>
+            <div class="pay-row pay-amount">
+              <span class="amount-line">
+                <strong id="payment-amount" class="amount"></strong>
+                <button id="amount-copy" class="icon-button bare" type="button" data-icon="copy" data-icon-only>
+                  Copy amount
+                </button>
+              </span>
+              <span class="pay-network">
+                <span class="caption muted">on</span>
+                <span id="payment-network" class="network"></span>
+              </span>
+            </div>
+            <div id="payment-progress-box" class="pay-row progress-box" hidden>
+              <div class="row between caption">
+                <span id="payment-progress-label">Received</span>
+                <span id="payment-received" class="muted"></span>
+              </div>
+              <progress id="payment-progress" max="100" value="0" aria-labelledby="payment-progress-label"></progress>
+            </div>
+            <div class="pay-row pay-to">
+              <span class="caption muted">To</span>
+              <div class="copy-value address">
+                <code id="payment-address" class="mono" role="img"></code>
+                <button id="address-copy" class="icon-button" type="button" data-icon="copy" data-icon-only>
+                  Copy address
+                </button>
+              </div>
+            </div>
+            <p id="payment-warning" class="pay-row note warning">
+              <span data-icon="alert" aria-hidden="true"></span><span id="payment-warning-text"></span>
+            </p>
+          </div>
+          <figure id="payment-qr-card" class="qr-card" hidden>
+            <canvas id="payment-qr" class="qr" aria-label="Payment address QR code" role="img"></canvas>
+            <figcaption class="caption muted">Scan the address</figcaption>
+          </figure>
+        </div>
+        <div id="order-summary" class="stack">
+          <ul id="order-items" class="order-lines"></ul>
+          <div class="row between order-total">
+            <span id="order-total-label">Total</span>
+            <strong id="order-total"></strong>
+          </div>
+        </div>
+        <div id="delivery" class="stack" hidden></div>
+      </section>
+    </main>
+    <dialog id="cart-dialog" class="drawer cart" aria-labelledby="cart-title">
+      <div class="dialog-body">
+        <div class="dialog-heading">
+          <h2 id="cart-title">Bag</h2>
+          <div class="row">
+            <button id="clear" class="icon-button" type="button" data-icon="trash" data-icon-only>
+              Empty bag
+            </button>
+            <button class="icon-button" type="button" data-close="cart-dialog" data-icon="close" data-icon-only>
+              Close bag
+            </button>
+          </div>
+        </div>
+        <ol id="cart-steps" class="stepper compact" aria-label="Checkout steps" hidden>
+          <li><span class="stepper-marker"></span><span>Bag</span></li>
+          <li><span class="stepper-marker"></span><span>Pay</span></li>
+          <li><span class="stepper-marker"></span><span>Confirm</span></li>
+          <li><span class="stepper-marker"></span><span>Delivered</span></li>
+        </ol>
+        <div id="cart" class="cart-list"></div>
+        <div id="cart-summary" class="cart-summary"></div>
+      </div>
+    </dialog>
+    <dialog id="history-dialog" class="wide" aria-labelledby="history-title">
+      <div class="dialog-body stack">
+        <div class="dialog-heading">
+          <h2 id="history-title">Orders</h2>
+          <button class="icon-button" type="button" data-close="history-dialog" data-icon="close" data-icon-only>
+            Close orders
+          </button>
+        </div>
+        <div id="history-list" class="history"></div>
+      </div>
+    </dialog>
+  </body>
+</html>

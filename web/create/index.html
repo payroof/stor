@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    <meta name="theme-color" content="#fefcfa" />
+    <title>Stor</title>
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script src="/theme.js"></script>
+    <link rel="stylesheet" href="/style.css" />
+    <script type="module" src="/app.js"></script>
+  </head>
+  <body class="create-page">
+    <header class="create-top">
+      <!-- The favicon's mark, coloured by the theme. -->
+      <a class="create-logo" href="/" aria-label="Stor">
+        <svg class="create-mark" viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="1.5" y="1.5" width="21" height="21" rx="4.5" />
+          <path d="M1.5 9h21M1.5 15.5h21M9 9v13.5" />
+        </svg>
+      </a>
+      <div class="row" data-theme-slot></div>
+    </header>
+    <main id="workspace" class="welcome" tabindex="-1">
+      <div class="welcome-title">
+        <h1>Create your store</h1>
+        <p class="muted">Storefronts kept in Google Sheets, paid in crypto.</p>
+      </div>
+      <!-- The form is a sheet: a formula bar with the active row's hint, one row per step,
+           and the green cell that creates the store. -->
+      <form id="create" class="sheet">
+        <p class="formula-bar">
+          <span class="fx" aria-hidden="true">fx</span>
+          <span id="hint">A store is a Google Sheet. Three rows to fill.</span>
+        </p>
+        <div class="sheet-row" data-hint="Open your sheet, click Share and add this address as Editor.">
+          <span class="row-head" aria-hidden="true">1</span>
+          <div class="cell">
+            <span class="cell-label">Share your sheet as Editor with</span>
+            <span class="copy-value">
+              <code id="account" class="mono"></code>
+              <button id="copy-account" class="icon-button" type="button" data-icon="copy" data-icon-only>
+                Copy
+              </button>
+            </span>
+            <a class="cell-link" href="https://docs.google.com/spreadsheets/create" target="_blank"
+              rel="noopener noreferrer" data-icon="external">No sheet yet? Create one</a>
+          </div>
+        </div>
+        <label class="sheet-row" data-hint="The sheet's link from the address bar, or its ID.">
+          <span class="row-head" aria-hidden="true">2</span>
+          <span class="cell">
+            <span class="cell-label">Google Sheet link</span>
+            <input id="source" type="text" inputmode="url" placeholder="https://docs.google.com/spreadsheets/d/…"
+              pattern="https://docs\.google\.com/spreadsheets/d/[\w\-]{20,100}(?:[\/?#].*)?|[\w\-]{20,100}"
+              autocapitalize="none" autocomplete="off" spellcheck="false" enterkeyhint="next"
+              aria-describedby="hint" required />
+          </span>
+        </label>
+        <label class="sheet-row" data-hint="3–40 lowercase letters, digits or hyphens. It can't be changed later.">
+          <span class="row-head" aria-hidden="true">3</span>
+          <span class="cell">
+            <span class="cell-label">Store address</span>
+            <span class="input-actions">
+              <input id="subdomain" pattern="[a-z0-9]([a-z0-9\-]{1,38})[a-z0-9]" maxlength="40" placeholder="my-store"
+                autocapitalize="none" autocomplete="off" spellcheck="false" enterkeyhint="go"
+                aria-describedby="hint" required />
+              <span id="suffix" class="muted"></span>
+            </span>
+          </span>
+        </label>
+        <div class="sheet-row" data-hint="Stor adds Catalog, Branding, Payments and History tabs, with sample products.">
+          <span class="row-head" aria-hidden="true">4</span>
+          <button id="submit" type="submit" class="cell create-cell" data-icon="plus">Create</button>
+        </div>
+      </form>
+      <!-- The result is a sheet as well: the store, then what is left to do, row by row. -->
+      <section id="created" class="sheet created" tabindex="-1" aria-labelledby="created-title" hidden>
+        <p class="formula-bar done">
+          <span class="fx" aria-hidden="true" data-icon="check"></span>
+          <strong id="created-title">Store created</strong>
+        </p>
+        <div class="sheet-row">
+          <span class="row-head" aria-hidden="true">1</span>
+          <div class="cell">
+            <span class="cell-label">Store</span>
+            <span class="copy-value">
+              <a id="store" class="mono" target="_blank" rel="noopener noreferrer"></a>
+              <button id="copy-store" class="icon-button" type="button" data-icon="copy" data-icon-only>
+                Copy link
+              </button>
+            </span>
+            <a id="store-local" class="caption muted" target="_blank" rel="noopener noreferrer" hidden></a>
+          </div>
+        </div>
+        <div class="sheet-row todo">
+          <span class="row-head" aria-hidden="true">2</span>
+          <div class="cell">
+            <span class="cell-label">Next, connect payments</span>
+            <span>
+              In Payroof Wallet: Project → Stores → <b>Connect store</b>. It gives a <b>URL</b>
+              (your payment server) and a <b>KEY</b> (it lets Stor create a payment address for
+              each order and can't move funds). Paste both into the sheet's Payments tab.
+            </span>
+          </div>
+        </div>
+        <div class="sheet-row todo">
+          <span class="row-head" aria-hidden="true">3</span>
+          <div class="cell">
+            <span class="cell-label">Then, in Google Sheets</span>
+            <span>
+              Stor adds a Tokens tab whose formulas fetch USD rates from CoinGecko. Google warns
+              <q>Some formulas are trying to send and receive data from external parties</q>:
+              click <b>Allow access</b>. Until then, prices in USD can't be converted.
+            </span>
+          </div>
+        </div>
+        <div class="sheet-row">
+          <span class="row-head" aria-hidden="true">4</span>
+          <div class="cell actions">
+            <a id="open-sheet" class="button create-cell" target="_blank" rel="noopener noreferrer" data-icon="sheet">Open sheet</a>
+            <a id="open-store" class="button secondary" target="_blank" rel="noopener noreferrer" data-icon="external">Store</a>
+            <button id="again" class="icon-button" type="button" data-icon="plus" data-icon-only>Create another</button>
+          </div>
+        </div>
+        <p id="created-status" class="sr-only" role="status" aria-live="polite"></p>
+      </section>
+    </main>
+    <footer class="create-foot">
+      <nav class="foot-links" aria-label="Help">
+        <button class="link-button" type="button" data-open="how-dialog" data-icon="info">How it works</button>
+        <button class="link-button" type="button" data-open="tabs-dialog" data-icon="sheet">Make the tabs yourself</button>
+      </nav>
+      <a class="github" href="https://github.com/payroof/stor" target="_blank" rel="noopener noreferrer"
+        aria-label="Stor on GitHub" title="Stor on GitHub">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.04-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.56-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.8 1.19 1.83 1.19 3.09 0 4.42-2.69 5.39-5.25 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5Z"/>
+        </svg>
+      </a>
+    </footer>
+    <!-- How it works: the whole path, row by row, as on the page. -->
+    <dialog id="how-dialog" class="sheet-dialog" aria-labelledby="how-title">
+      <div class="dialog-body stack">
+        <div class="dialog-heading">
+          <h2 id="how-title">How it works</h2>
+          <button class="icon-button" type="button" data-close="how-dialog" data-icon="close" data-icon-only>Close</button>
+        </div>
+        <div class="sheet">
+          <div class="sheet-row">
+            <span class="row-head" aria-hidden="true">1</span>
+            <span class="cell"><span class="cell-label">Share</span>
+              <span>Share your Google Sheet as Editor with Stor's account. No sheet yet?
+                <a href="https://docs.google.com/spreadsheets/create" target="_blank"
+                  rel="noopener noreferrer">Create one</a>: it can start empty.</span></span>
+          </div>
+          <div class="sheet-row">
+            <span class="row-head" aria-hidden="true">2</span>
+            <span class="cell"><span class="cell-label">Create</span>
+              <span>Paste the sheet's link and pick an address. Stor adds the tabs your sheet lacks:
+                Catalog with sample products, Branding, Payments, History and Stats.</span></span>
+          </div>
+          <div class="sheet-row">
+            <span class="row-head" aria-hidden="true">3</span>
+            <span class="cell"><span class="cell-label">Connect payments</span>
+              <span>In Payroof Wallet: Project → Stores → Connect store. Paste its URL (your payment
+                server) and KEY (creates a payment address per order, can't move funds) into the
+                Payments tab. Stor then lists your tokens in a Tokens tab.</span></span>
+          </div>
+          <div class="sheet-row">
+            <span class="row-head" aria-hidden="true">4</span>
+            <span class="cell"><span class="cell-label">Allow access</span>
+              <span>Google asks once to let the Tokens tab fetch USD rates from CoinGecko: click
+                <b>Allow access</b>.</span></span>
+          </div>
+          <div class="sheet-row">
+            <span class="row-head" aria-hidden="true">5</span>
+            <span class="cell"><span class="cell-label">Sell</span>
+              <span>Edit everything in the sheet. Paid orders appear in History. The address and the
+                sheet stay linked for good.</span></span>
+          </div>
+        </div>
+      </div>
+    </dialog>
+    <!-- Sample tables: for merchants who make the tabs themselves. -->
+    <dialog id="tabs-dialog" class="sheet-dialog" aria-labelledby="tabs-title">
+      <div class="dialog-body stack">
+        <div class="dialog-heading">
+          <h2 id="tabs-title">Make the tabs yourself</h2>
+          <button class="icon-button" type="button" data-close="tabs-dialog" data-icon="close" data-icon-only>Close</button>
+        </div>
+        <p class="muted">
+          Download the tables Stor would add and import each in Google Sheets: File → Import →
+          Upload → Insert new sheet. Stor knows tabs by their header row and adds only the ones
+          still missing.
+        </p>
+        <div class="sheet">
+          <a class="sheet-row download" href="/v1/templates/Catalog.csv" download="Catalog.csv">
+            <span class="row-head" aria-hidden="true">1</span>
+            <span class="cell">
+              <span class="cell-label">Catalog.csv</span>
+              <span>Products, prices, stock and delivery: 32 samples to edit or delete</span>
+            </span>
+            <span class="download-icon" data-icon="download" aria-hidden="true"></span>
+          </a>
+          <a class="sheet-row download" href="/v1/templates/Tokens.csv" download="Tokens.csv">
+            <span class="row-head" aria-hidden="true">2</span>
+            <span class="cell">
+              <span class="cell-label">Tokens.csv</span>
+              <span>Header only: Stor lists your payment server's tokens in it</span>
+            </span>
+            <span class="download-icon" data-icon="download" aria-hidden="true"></span>
+          </a>
+          <a class="sheet-row download" href="/v1/templates/Branding.csv" download="Branding.csv">
+            <span class="row-head" aria-hidden="true">3</span>
+            <span class="cell">
+              <span class="cell-label">Branding.csv</span>
+              <span>The store's name, description, website and style</span>
+            </span>
+            <span class="download-icon" data-icon="download" aria-hidden="true"></span>
+          </a>
+          <a class="sheet-row download" href="/v1/templates/Payments.csv" download="Payments.csv">
+            <span class="row-head" aria-hidden="true">4</span>
+            <span class="cell">
+              <span class="cell-label">Payments.csv</span>
+              <span>URL and KEY from Payroof Wallet. Stor writes STATUS</span>
+            </span>
+            <span class="download-icon" data-icon="download" aria-hidden="true"></span>
+          </a>
+          <a class="sheet-row download" href="/v1/templates/History.csv" download="History.csv">
+            <span class="row-head" aria-hidden="true">5</span>
+            <span class="cell">
+              <span class="cell-label">History.csv</span>
+              <span>Empty: Stor adds a row for every paid order</span>
+            </span>
+            <span class="download-icon" data-icon="download" aria-hidden="true"></span>
+          </a>
+        </div>
+      </div>
+    </dialog>
+  </body>
+</html>

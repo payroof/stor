@@ -1,0 +1,85 @@
+# Stor configuration. Pass the file as the only argument: `stortop config/stortop.example.toml`.
+# The keys come from the environment: STORTOP_MASTER_KEY and STORTOP_ALTCHA_KEY
+# (each 32 random bytes as 64 hex characters, and different).
+
+# Listen address, and Stor's own origin (creation page, webhook URLs): HTTPS unless
+# `development` is true, with no path.
+bind = "127.0.0.1:8081"
+origin = "http://127.0.0.1:8081"
+# Other origins of the same server for its own page and store creation. Webhooks always use `origin`.
+# origin_aliases = []
+# Stores live at <store>.<store_suffix>. In production, e.g. "stor.top" with wildcard DNS and TLS.
+store_suffix = "stor.localhost:8081"
+# Other suffixes that reach the same stores (links use `store_suffix`).
+# store_suffix_aliases = []
+# SQLite URL. The directory must be writable.
+database = "sqlite://stortop.sqlite"
+# The Payroof servers stores may use for payments (at least one).
+payroof_origins = ["http://127.0.0.1:8080"]
+# Allows HTTP origins and cookies without Secure. Never in production.
+development = true
+# Stores are Google Sheets shared with this service account as Editor. Without it no
+# store can be created.
+# google_credentials = "/run/secrets/google-service-account.json"
+# Seconds between reads of each store's sheet (30-3600).
+sync_seconds = 120
+# A sheet unreadable this long ends its store for good (1-365 days).
+deactivate_after_days = 7
+# Default: trust no forwarding headers. Only explicitly listed socket peers
+# may supply X-Forwarded-For. The chain is walked right-to-left.
+trusted_proxies = []
+
+# Store names no one may take, for ethical and technical reasons. Stor's own technical
+# names (www, api, admin, mail, login, payroof, wallet, …) are always reserved. These two
+# lists add to them and are the defaults shown here: change them, or leave a key out to
+# keep its default. Entries are lowercase letters, digits and inner hyphens.
+#
+# Whole names refused (impersonation, phishing bait): "paypal", and "pay-pal" too.
+reserved_names = [
+    "google", "gmail", "youtube", "apple", "icloud", "microsoft", "outlook", "amazon",
+    "meta", "facebook", "instagram", "whatsapp", "telegram", "twitter", "discord",
+    "tiktok", "paypal", "stripe", "visa", "mastercard", "amex", "wise", "revolut",
+    "venmo", "cashapp", "western-union", "moneygram", "binance", "coinbase", "kraken",
+    "bybit", "okx", "kucoin", "bitfinex", "gemini", "crypto-com", "metamask",
+    "trustwallet", "phantom", "ledger", "trezor", "exodus", "uniswap", "opensea",
+    "etherscan", "ethereum", "bitcoin", "solana", "polygon", "arbitrum", "optimism",
+    "base", "tether", "usdt", "usdc", "circle", "bank", "banking", "irs", "hmrc", "fbi",
+    "cia", "police", "interpol", "gov", "government", "court", "tax", "taxes", "un",
+    "unicef", "who", "redcross", "airdrop", "airdrops", "giveaway", "giveaways", "claim",
+    "claims", "free-crypto", "double-your-crypto", "investment", "invest", "profit",
+    "lottery", "prize", "winner",
+]
+# Words refused anywhere in a name, as one of its hyphen-separated parts: "porn" refuses
+# "free-porn" but never "sussex"-style names that merely contain the letters. A compound
+# without hyphens ("pornshop") is refused only when listed itself.
+blocked_words = [
+    "porn", "porno", "pornography", "p0rn", "pr0n", "xxx", "sex", "s3x", "sexy",
+    "sexshop", "nsfw", "nude", "nudes", "naked", "erotic", "erotica", "adult", "escort",
+    "escorts", "hooker", "hookers", "prostitute", "prostitution", "camgirl", "camgirls",
+    "webcam-sex", "onlyfans", "pornhub", "xvideos", "xhamster", "chaturbate", "fetish",
+    "bdsm", "hentai", "milf", "incest", "orgy", "cum", "dick", "cock", "pussy", "tits",
+    "boobs", "pedo", "pedophile", "paedo", "paedophile", "loli", "lolita", "shota",
+    "childporn", "cp", "underage", "jailbait", "rape", "rapist", "bestiality",
+    "zoophilia", "gore", "snuff", "murder", "kill", "killer", "suicide", "selfharm",
+    "self-harm", "terror", "terrorist", "terrorism", "isis", "jihad", "nazi", "nazis",
+    "hitler", "kkk", "genocide", "nigger", "nigga", "faggot", "retard", "kike", "chink",
+    "spic", "tranny", "drugs", "cocaine", "heroin", "meth", "fentanyl", "mdma", "lsd",
+    "darknet", "darkweb", "weapons", "firearms", "guns", "ammo", "explosives",
+    "counterfeit", "fake-id", "fakeid", "stolen", "carding", "cvv", "fullz", "dumps",
+    "ransomware", "malware", "botnet", "ddos", "phishing", "hacked", "exploit-kit",
+    "scam", "scams", "scammer", "fraud", "ponzi", "pyramid-scheme", "casino", "gambling",
+    "betting", "slots",
+]
+
+# The values below are the defaults.
+[limits]
+json_body = 32768                # bytes of a JSON request body
+webhook_body = 16384             # bytes of a webhook body
+request_timeout_seconds = 30     # reading the request and answering it
+concurrency = 64                 # requests handled at once
+customers_per_store = 10000      # customer cookies one store issues
+ordinary_per_minute = 120        # requests per minute per client
+proof_per_minute = 10            # challenge requests per minute per client
+create_per_minute = 3            # store creations and checkouts per minute per client
+stores_per_day = 10              # stores one client creates per day
+rate_limit_entries = 100000      # rate-limit records kept

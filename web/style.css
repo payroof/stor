@@ -1,0 +1,3877 @@
+/*
+ * Stor: warm limestone and graphite surfaces, one copper accent. Storefronts are a
+ * spreadsheet in Google's greens, in a light and a dark theme.
+ * Sections: tokens · base · controls · fields · surfaces · feedback · dialogs ·
+ * management · storefront · motion. Mobile first. Wider layouts add on top.
+ */
+
+/* Tokens */
+:root {
+  color-scheme: light;
+  --color-canvas: #f4f2ed;
+  --color-surface: #fefcfa;
+  --color-raised: #eae7e1;
+  --color-text: #1e2228;
+  --color-muted: #5f646b;
+  --color-border: #dad7d0;
+  --color-accent: #a34d1c;
+  --color-on-accent: #fffaf2;
+  --color-roof: #272c34;
+  --color-roof-edge: #41474f;
+  --color-on-roof: #f6f1e8;
+  --color-on-roof-muted: #b3b5b9;
+  --color-sunrise: #f2a15c;
+  --color-on-sunrise: #24140a;
+  --color-success: #24734a;
+  --color-danger: #b3292e;
+  --color-warning: #875c00;
+  --color-shadow: rgb(20 24 30 / 12%);
+  /* The sheet look of the creation page and the logo. */
+  --sheet-head: #e8eaed;
+  --sheet-head-active: #d6dae0;
+  --sheet-head-text: #5f6368;
+  --sheet-cell: #ffffff;
+  --sheet-grid: #c4c8ce;
+  --sheet-green: #188a4a;
+  --sheet-on-green: #ffffff;
+  --color-backdrop: rgb(16 18 22 / 45%);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --control: 44px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --edge: max(var(--space-4), env(safe-area-inset-left));
+  font:
+    15px/1.5 -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    system-ui,
+    sans-serif;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-canvas: #12151a;
+  --color-surface: #1c2025;
+  --color-raised: #292d33;
+  --color-text: #efece5;
+  --color-muted: #9ea3aa;
+  --color-border: #383d44;
+  --color-accent: #f5a15c;
+  --color-on-accent: #21140a;
+  --color-roof: #242a31;
+  --color-roof-edge: #3f454f;
+  --color-on-roof-muted: #a8acb3;
+  --color-sunrise: #f7ab66;
+  --color-success: #7dd19c;
+  --color-danger: #ff8f8f;
+  --color-warning: #f2c761;
+  --color-shadow: rgb(0 0 0 / 35%);
+  --sheet-head: #2a2f36;
+  --sheet-head-active: #363c45;
+  --sheet-head-text: #a8acb3;
+  --sheet-cell: #1c2025;
+  --sheet-grid: #454b54;
+  --sheet-green: #1f9d57;
+}
+
+/* Base */
+* {
+  box-sizing: border-box;
+}
+html {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  margin: 0;
+  background: var(--color-canvas);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+}
+[hidden] {
+  display: none !important;
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+button {
+  cursor: pointer;
+}
+button,
+a,
+input,
+textarea,
+summary {
+  touch-action: manipulation;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s,
+    box-shadow 0.15s,
+    opacity 0.15s;
+}
+a {
+  color: var(--color-accent);
+  text-underline-offset: 4px;
+  overflow-wrap: anywhere;
+}
+:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+:is(button, a, input, textarea, summary):focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+h1 {
+  font-size: clamp(1.4rem, 3vw, 1.8rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+h2 {
+  font-size: 1.05rem;
+  font-weight: 650;
+}
+h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+small,
+.caption {
+  font-size: 0.82rem;
+}
+.muted {
+  color: var(--color-muted);
+}
+.mono,
+code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.82rem;
+  overflow-wrap: anywhere;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.skip {
+  position: absolute;
+  left: var(--space-4);
+  top: -100px;
+  z-index: 60;
+  background: var(--color-surface);
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+}
+.skip:focus {
+  top: var(--space-3);
+}
+/* Icons sit with their text: block-level inside inline-flex parents, sized to the font. */
+.ui-icon {
+  display: block;
+  width: 1.25em;
+  height: 1.25em;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+[data-icon]:not(button, a, .tile) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+}
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+.between {
+  justify-content: space-between;
+}
+.wrap {
+  flex-wrap: wrap;
+}
+.grow {
+  flex: 1;
+  min-width: 0;
+}
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+  font-weight: 700;
+  color: var(--color-text);
+  text-decoration: none;
+}
+.brand > span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.brand-mark {
+  display: block;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+}
+
+/* Controls */
+.button,
+.icon-button,
+.nav-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--control);
+  min-width: var(--control);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  line-height: 1.25;
+}
+.button {
+  padding: 0 var(--space-4);
+  border: 1px solid transparent;
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+.button.secondary,
+.icon-button {
+  padding: 0;
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+.button.secondary {
+  padding: 0 var(--space-4);
+}
+.button.tertiary {
+  background: transparent;
+  border-color: transparent;
+  color: var(--color-accent);
+}
+.button.danger {
+  background: var(--color-danger);
+  color: var(--color-surface);
+}
+/* Only the icon: for a small action that sits right beside its value. */
+.icon-button.bare {
+  min-width: 32px;
+  min-height: 32px;
+  border-color: transparent;
+  background: transparent;
+  color: var(--store-muted, var(--color-muted));
+}
+.icon-button.bare .ui-icon {
+  width: 18px;
+  height: 18px;
+}
+@media (hover: hover) {
+  .icon-button.bare:not(:disabled):hover {
+    box-shadow: none;
+    color: var(--store-accent, var(--color-accent));
+  }
+}
+.icon-button.danger {
+  background: color-mix(in srgb, var(--color-danger) 8%, transparent);
+  border-color: color-mix(in srgb, var(--color-danger) 40%, transparent);
+  color: var(--color-danger);
+}
+.button.small {
+  min-height: 36px;
+  padding: 0 var(--space-3);
+  font-size: 0.82rem;
+}
+.button.full {
+  width: 100%;
+}
+.icon-button {
+  flex-shrink: 0;
+}
+@media (hover: hover) {
+  :is(.button, .icon-button, .nav-button):hover:not(:disabled) {
+    box-shadow: inset 0 0 0 100px color-mix(in srgb, var(--color-text) 6%, transparent);
+  }
+  .button:not(.secondary, .tertiary, .danger):hover:not(:disabled) {
+    box-shadow: inset 0 0 0 100px rgb(255 255 255 / 12%);
+  }
+}
+:is(.button, .icon-button, .nav-button, .row-button):active:not(:disabled) {
+  opacity: 0.78;
+}
+/* An action reports its own progress: a spinner takes the icon's place. */
+[aria-busy="true"] {
+  cursor: progress;
+}
+[aria-busy="true"]:disabled {
+  opacity: 1;
+}
+:is(button, .button)[aria-busy="true"] > .ui-icon {
+  display: none;
+}
+:is(button, .button)[aria-busy="true"]::before,
+.spinner {
+  content: "";
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+/* Fields */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.field > :is(span, label) {
+  font-size: 0.82rem;
+  font-weight: 550;
+  color: var(--color-muted);
+}
+input,
+textarea {
+  width: 100%;
+  min-width: 0;
+  min-height: var(--control);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-canvas);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  line-height: 1.4;
+  font-size: 16px;
+}
+@media (hover: hover) {
+  :is(input, textarea):hover:not(:disabled, :focus, [readonly]) {
+    border-color: color-mix(in srgb, var(--color-text) 28%, var(--color-border));
+  }
+}
+textarea {
+  resize: vertical;
+  min-height: 88px;
+}
+textarea.mono {
+  min-height: 180px;
+  tab-size: 2;
+}
+input:focus,
+textarea:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 16%, transparent);
+}
+:is(input, textarea)[aria-invalid="true"] {
+  border-color: var(--color-danger);
+}
+::placeholder {
+  color: var(--color-muted);
+  opacity: 0.8;
+}
+input[type="radio"] {
+  width: 20px;
+  min-height: 20px;
+  accent-color: var(--color-accent);
+  flex-shrink: 0;
+}
+input[type="checkbox"] {
+  appearance: none;
+  display: grid;
+  place-content: center;
+  width: 22px;
+  height: 22px;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  flex-shrink: 0;
+  border: 1.5px solid color-mix(in srgb, var(--color-text) 30%, var(--color-border));
+  border-radius: 6px;
+  background: var(--color-surface);
+  cursor: pointer;
+}
+input[type="checkbox"]::before {
+  content: "";
+  width: 12px;
+  height: 12px;
+  background: var(--color-on-accent);
+  clip-path: polygon(14% 52%, 0 66%, 38% 100%, 100% 22%, 86% 8%, 38% 72%);
+  transform: scale(0);
+  transition: transform 0.12s;
+}
+input[type="checkbox"]:checked {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+}
+input[type="checkbox"]:checked::before {
+  transform: scale(1);
+}
+input[type="search"] {
+  appearance: none;
+}
+.check-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--control);
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  font-weight: 550;
+  cursor: pointer;
+}
+.check-row:has(:checked) {
+  border-color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 6%, transparent);
+}
+/* A value with trailing icon actions inside one field. */
+.copy-value,
+.input-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+  min-height: var(--control);
+  padding: 0 3px 0 var(--space-3);
+  background: var(--color-canvas);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+.copy-value code {
+  flex: 1;
+  min-width: 0;
+  padding: var(--space-2) var(--space-2) var(--space-2) 0;
+}
+.input-actions:has(input:focus) {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 16%, transparent);
+}
+.input-actions input {
+  flex: 1;
+  min-height: 0;
+  padding: var(--space-2) 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none !important;
+  text-overflow: ellipsis;
+}
+.input-actions input:is(:focus, :focus-visible) {
+  outline: none;
+}
+.input-actions input[type="password"] {
+  letter-spacing: 0.12em;
+}
+:is(.copy-value, .input-actions) .icon-button {
+  border: 0;
+  background: transparent;
+  color: var(--color-muted);
+}
+:is(.copy-value, .input-actions) .icon-button:focus-visible {
+  outline-offset: -2px;
+}
+.address-field {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.address-field input {
+  flex: 1;
+}
+.address-field > span {
+  max-width: 55%;
+  font-size: 0.85rem;
+  color: var(--color-muted);
+  overflow-wrap: anywhere;
+}
+.segmented {
+  display: grid;
+  grid-auto-columns: 1fr;
+  grid-auto-flow: column;
+  gap: 2px;
+  padding: 2px;
+  background: var(--color-raised);
+  border-radius: var(--radius-sm);
+}
+.segmented > button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: calc(var(--control) - 4px);
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--color-muted);
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+.segmented > [aria-pressed="true"] {
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: 0 1px 3px var(--color-shadow);
+}
+fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* Surfaces */
+.card {
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  min-width: 0;
+}
+.tile {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+  flex-shrink: 0;
+}
+.tile .ui-icon {
+  width: 17px;
+  height: 17px;
+}
+.tile.success {
+  color: var(--color-success);
+  background: color-mix(in srgb, var(--color-success) 14%, transparent);
+}
+.tile.danger {
+  color: var(--color-danger);
+  background: color-mix(in srgb, var(--color-danger) 10%, transparent);
+}
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-muted);
+  background: color-mix(in srgb, var(--color-muted) 12%, transparent);
+  white-space: nowrap;
+}
+.pill:not(:has(.ui-icon))::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.pill.success {
+  color: var(--color-success);
+  background: color-mix(in srgb, var(--color-success) 12%, transparent);
+}
+.pill.warning {
+  color: var(--color-warning);
+  background: color-mix(in srgb, var(--color-warning) 14%, transparent);
+}
+.pill.danger {
+  color: var(--color-danger);
+  background: color-mix(in srgb, var(--color-danger) 12%, transparent);
+}
+.amount {
+  font-size: clamp(1.4rem, 5vw, 2rem);
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.qr {
+  width: 192px;
+  max-width: 100%;
+  height: auto;
+  padding: var(--space-2);
+  image-rendering: pixelated;
+  border-radius: var(--radius-md);
+  background: white;
+}
+details > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: var(--control);
+  cursor: pointer;
+  font-weight: 600;
+  list-style: none;
+}
+details > summary::-webkit-details-marker {
+  display: none;
+}
+details > summary::after {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-right: 2px solid var(--color-muted);
+  border-bottom: 2px solid var(--color-muted);
+  transform: rotate(-45deg);
+  transition: transform 0.15s;
+}
+details[open] > summary::after {
+  transform: rotate(45deg);
+}
+details > :not(summary) + :not(summary) {
+  margin-top: var(--space-3);
+}
+
+/* Feedback */
+.help-control {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+/* Beside a field label: centred on the text, without making the label taller. */
+.field > span:has(> .help-control) {
+  display: flex;
+  align-items: center;
+}
+.field > span > .help-control {
+  margin-block: -14px;
+}
+.help-trigger {
+  color: var(--color-muted);
+  background: transparent;
+  border: 0;
+}
+/* The (i) only changes colour: no hover box around it. */
+@media (hover: hover) {
+  .help-trigger:hover:not(:disabled) {
+    box-shadow: none;
+    color: var(--color-accent);
+  }
+}
+.help-content {
+  position: fixed;
+  z-index: 40;
+  inset: auto;
+  margin: 0;
+  width: min(300px, calc(100vw - 16px));
+  max-height: calc(100dvh - 16px);
+  overflow-y: auto;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-muted);
+  font-size: 0.82rem;
+  font-weight: 400;
+  line-height: 1.5;
+  text-align: left;
+}
+.technical {
+  color: var(--color-muted);
+}
+.toast-region {
+  position: fixed;
+  top: calc(var(--space-3) + env(safe-area-inset-top));
+  left: 50%;
+  z-index: 50;
+  width: min(520px, calc(100vw - 24px));
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+.toast-region.page {
+  top: auto;
+  bottom: calc(var(--space-4) + max(var(--toast-lift, 0px), env(safe-area-inset-bottom)));
+  left: var(--toast-center, 50%);
+}
+.toast-region.page .toast {
+  animation-name: toast-up;
+}
+.toast {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 48px;
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--toast-tint, var(--color-border));
+  background:
+    linear-gradient(color-mix(in srgb, var(--toast-tint, transparent) 10%, transparent) 0 0),
+    var(--color-surface);
+  box-shadow: 0 8px 28px var(--color-shadow);
+  font-size: 0.9rem;
+  font-weight: 550;
+  pointer-events: auto;
+  cursor: pointer;
+  animation: toast-in 0.2s ease-out;
+}
+.toast > .ui-icon {
+  color: var(--toast-tint, var(--color-accent));
+}
+.toast > span {
+  flex: 1;
+  min-width: 0;
+}
+.toast .icon-button {
+  border: 0;
+  background: transparent;
+  color: var(--color-muted);
+}
+.toast.success {
+  --toast-tint: var(--color-success);
+}
+.toast.error {
+  --toast-tint: var(--color-danger);
+}
+@keyframes toast-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+.note {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 550;
+  color: var(--color-muted);
+}
+.note.warning {
+  color: var(--color-warning);
+  background: color-mix(in srgb, var(--color-warning) 10%, transparent);
+}
+.note.error {
+  color: var(--color-danger);
+  background: color-mix(in srgb, var(--color-danger) 8%, transparent);
+}
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  min-height: 200px;
+  padding: var(--space-6) var(--space-4);
+  text-align: center;
+}
+.empty-icon {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 8%, transparent);
+}
+.empty-icon .ui-icon {
+  width: 26px;
+  height: 26px;
+}
+/* A waiting request in one line: progress, the time left and its cancel, with
+   the time left also draining along the bottom edge. */
+.waiting {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--control);
+  padding: 0 var(--space-1) 0 var(--space-3);
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--color-accent) 8%, transparent);
+  color: var(--color-accent);
+}
+.waiting .spinner {
+  width: 14px;
+  height: 14px;
+}
+.waiting time {
+  font-size: 1.05rem;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
+.waiting .button.tertiary {
+  min-height: 36px;
+  margin-left: auto;
+  padding: 0 var(--space-3);
+  color: var(--color-muted);
+}
+.waiting .button.tertiary:hover:not(:disabled) {
+  color: var(--color-danger);
+}
+.waiting-track {
+  position: absolute;
+  inset: auto 0 0;
+  height: 3px;
+  background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+}
+.waiting-track > span {
+  display: block;
+  height: 100%;
+  background: currentColor;
+  transition: width 1s linear;
+}
+.waiting.ending {
+  background: color-mix(in srgb, var(--color-warning) 12%, transparent);
+  color: var(--color-warning);
+}
+/* A field with its action on the same line. */
+.field > .connect-row {
+  display: flex;
+  gap: var(--space-2);
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+}
+.connect-row .button {
+  flex: none;
+}
+
+/* Dialogs: a sheet at the bottom on phones, a centred panel from tablets up. */
+/* --keyboard-inset / --viewport-height (ui.js) keep a sheet above the on-screen keyboard. */
+dialog {
+  margin: auto 0 0;
+  bottom: var(--keyboard-inset, 0px);
+  padding: 0 0 env(safe-area-inset-bottom);
+  width: 100%;
+  max-width: 100%;
+  max-height: calc(var(--viewport-height, 100dvh) - 24px - env(safe-area-inset-top));
+  border: 1px solid var(--color-border);
+  border-width: 1px 0 0;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  background: var(--color-surface);
+  color: var(--color-text);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  box-shadow: 0 24px 80px var(--color-shadow);
+}
+dialog::backdrop {
+  background: var(--color-backdrop);
+  backdrop-filter: blur(3px);
+}
+.dialog-body {
+  padding: var(--space-5) var(--space-4) var(--space-4);
+}
+.dialog-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+.dialog-heading > h2 {
+  flex: 1;
+  min-width: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+.dialog-heading > .icon-button {
+  border: 0;
+  border-radius: 50%;
+  background: var(--color-raised);
+  color: var(--color-muted);
+}
+/* Confirmations: icon + title, explanation, then the choices. */
+.confirmation .dialog-heading {
+  justify-content: flex-start;
+}
+.confirmation .dialog-body > p {
+  margin: 0;
+}
+.confirmation .muted {
+  line-height: 1.5;
+}
+.confirmation .note {
+  align-items: flex-start;
+  background: var(--color-raised);
+  line-height: 1.45;
+}
+.confirmation .note .ui-icon {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+}
+.dialog-actions {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: var(--space-2);
+  padding-top: var(--space-2);
+}
+.dialog-actions .button {
+  width: 100%;
+}
+.drawer .dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+@media (min-width: 640px) {
+  dialog {
+    margin: auto;
+    width: min(440px, calc(100% - 24px));
+    max-height: calc(var(--viewport-height, 100dvh) - 24px);
+    border-width: 1px;
+    border-radius: var(--radius-lg);
+    padding-bottom: 0;
+  }
+  .dialog-body {
+    padding: var(--space-5);
+  }
+  .dialog-actions {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+  .dialog-actions .button {
+    width: auto;
+  }
+  .drawer {
+    margin: var(--space-3) var(--space-3) var(--space-3) auto;
+    width: min(420px, calc(100% - 24px));
+  }
+}
+
+/* Management */
+.app-shell {
+  min-height: 100dvh;
+}
+.sidebar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: calc(56px + env(safe-area-inset-top));
+  padding: env(safe-area-inset-top) var(--space-2) 0 var(--edge);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+.app-shell:has(#welcome:not([hidden])) .sidebar {
+  position: static;
+  border: 0;
+  background: none;
+}
+.app-shell:has(#welcome:not([hidden])) .sidebar .brand {
+  visibility: hidden;
+}
+.nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 6;
+  display: grid;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  padding: 0 var(--space-1) env(safe-area-inset-bottom);
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+.nav-button {
+  flex-direction: column;
+  gap: 3px;
+  min-height: 56px;
+  padding: 6px 2px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--color-muted);
+  font-size: 0.7rem;
+}
+.nav-button .ui-icon {
+  width: 22px;
+  height: 22px;
+}
+.nav-button[aria-current="page"] {
+  color: var(--color-accent);
+}
+.sidebar-foot {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+.sidebar-foot .icon-button {
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-muted);
+}
+@media (hover: hover) {
+  .sidebar-foot #sign-out:hover:not(:disabled) {
+    color: var(--color-danger);
+  }
+}
+.management-main {
+  min-width: 0;
+  padding: var(--space-4) var(--edge) calc(88px + env(safe-area-inset-bottom));
+}
+.app-shell:has(#welcome:not([hidden])) .management-main {
+  padding-bottom: var(--space-6);
+}
+.page {
+  max-width: 640px;
+  margin: 0 auto;
+}
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+.page-header h1 {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-5);
+  /* As wide as the screen allows, never wider: the form and its result shrink with it. */
+  width: min(440px, 100%);
+  padding: var(--space-4);
+  margin: 0 auto;
+  text-align: center;
+}
+.welcome-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  width: 100%;
+}
+/* The slate roof panel: the apps' PitchedPanelShape, drawn by ui.js behind centred
+   content (a status line, the headline, a caption, then equal-width actions). */
+.roof-panel {
+  --roof-fill: var(--color-roof);
+  --roof-edge: var(--color-roof-edge);
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 30px 20px 20px;
+  color: var(--color-on-roof);
+  text-align: center;
+}
+/* Until the roofline is drawn (or without scripts), a plain rounded slate panel. */
+.roof-panel:not(:has(> .roof-shape)) {
+  border-radius: var(--radius-lg);
+  background: var(--roof-fill);
+}
+.roof-shape {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  fill: var(--roof-fill);
+  stroke: var(--roof-edge);
+  stroke-width: 1;
+}
+.roof-top {
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+.roof-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+.roof-actions .button {
+  min-width: 160px;
+}
+.roof-panel .muted,
+.roof-panel .caption {
+  color: var(--color-on-roof-muted);
+}
+.roof-panel a:not(.button) {
+  color: var(--color-on-roof-muted);
+}
+.roof-panel .button:not(.secondary, .tertiary, .danger) {
+  background: var(--color-sunrise);
+  color: var(--color-on-sunrise);
+}
+.roof-panel :is(.button.secondary, .icon-button) {
+  background: color-mix(in srgb, var(--color-on-roof) 12%, transparent);
+  color: var(--color-on-roof);
+  border-color: transparent;
+}
+.roof-panel .icon-button.danger {
+  color: #ff8f8f;
+  background: color-mix(in srgb, #ff8f8f 14%, transparent);
+}
+.roof-panel .pill {
+  color: var(--color-on-roof);
+  background: color-mix(in srgb, var(--color-on-roof) 14%, transparent);
+}
+.roof-panel .pill.success::before {
+  background: #7dd19c;
+}
+.roof-panel .pill.warning::before {
+  background: var(--color-sunrise);
+}
+.roof-panel .pill.danger::before {
+  background: #ff8f8f;
+}
+.roof-title {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.store-address {
+  margin-top: calc(var(--space-2) * -1);
+  font-size: 0.9rem;
+  font-weight: 550;
+  text-decoration: none;
+}
+@media (hover: hover) {
+  .store-address:hover {
+    text-decoration: underline;
+  }
+}
+.id-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  max-width: 100%;
+  min-height: 36px;
+  padding: 0 var(--space-3);
+  border: 0;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--color-on-roof) 10%, transparent);
+  color: var(--color-on-roof-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+@media (hover: hover) {
+  .id-chip:hover {
+    color: var(--color-on-roof);
+    background: color-mix(in srgb, var(--color-on-roof) 16%, transparent);
+  }
+}
+.id-chip code {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-on-roof);
+}
+.id-chip .ui-icon {
+  width: 14px;
+  height: 14px;
+}
+.steps {
+  margin: 0;
+  padding: var(--space-1);
+  list-style: none;
+}
+.row-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 60px;
+  padding: var(--space-2) var(--space-3);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  text-align: left;
+}
+.row-button > span:nth-child(2) {
+  flex: 1;
+  min-width: 0;
+}
+.row-button strong,
+.row-button small {
+  display: block;
+}
+.row-button small {
+  color: var(--color-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.row-button > .ui-icon:last-child {
+  color: var(--color-muted);
+  width: 14px;
+}
+@media (hover: hover) {
+  button.row-button:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--color-text) 5%, transparent);
+  }
+}
+.step-marker {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 2px solid var(--color-border);
+  color: var(--color-muted);
+  font-size: 0.82rem;
+}
+.step-marker .ui-icon {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2.4;
+}
+[data-state="current"] .step-marker {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+[data-state="done"] .step-marker {
+  border-color: transparent;
+  background: color-mix(in srgb, var(--color-success) 14%, var(--color-surface));
+  color: var(--color-success);
+}
+[data-state="todo"] strong {
+  color: var(--color-muted);
+}
+.file-drop {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-6) var(--space-4);
+  border: 1.5px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-canvas);
+  text-align: center;
+  cursor: pointer;
+}
+.file-drop:not(.has-file) strong {
+  font-weight: 500;
+  color: var(--color-muted);
+}
+.file-drop > [data-icon] .ui-icon {
+  width: 28px;
+  height: 28px;
+  color: var(--color-accent);
+}
+.file-drop:not(.has-file) .file-chosen,
+.file-drop.has-file .file-pick {
+  display: none;
+}
+/* With a file chosen the drop zone shrinks to one row. It still opens the picker. */
+.file-drop.has-file {
+  flex-direction: row;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-style: solid;
+  text-align: start;
+}
+.file-drop.has-file strong {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.file-drop.has-file > [data-icon] .ui-icon {
+  width: 20px;
+  height: 20px;
+}
+.file-drop.has-file .file-replace .ui-icon {
+  color: var(--color-muted);
+}
+.file-drop input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.file-drop:has(input:focus-visible) {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+.file-drop.dragging {
+  border-color: var(--color-accent);
+}
+@media (hover: hover) {
+  .file-drop:hover {
+    border-color: var(--color-accent);
+  }
+}
+.step {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.step > b {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-size: 0.72rem;
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+.pairing-surface {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  gap: var(--space-5);
+}
+.pairing-surface > .stack {
+  width: 100%;
+}
+/* A finished step: centred icon, result and the actions that change it. */
+.done-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 14rem;
+  padding: var(--space-5) var(--space-3);
+  text-align: center;
+}
+/* Focused by script only, so a screen reader announces the result or page. */
+.done-state:focus,
+.management-main:focus {
+  outline: none;
+}
+.done-state .tile {
+  width: 3.5rem;
+  height: 3.5rem;
+  margin-bottom: var(--space-2);
+}
+.done-state .tile .ui-icon {
+  width: 1.6rem;
+  height: 1.6rem;
+}
+.done-state strong {
+  font-size: 1.05rem;
+}
+.done-state small {
+  color: var(--color-muted);
+  overflow-wrap: anywhere;
+}
+.done-actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+.status-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-3);
+  border: 1px solid color-mix(in srgb, var(--color-success) 35%, var(--color-border));
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-success) 7%, var(--color-surface));
+}
+.status-banner.error {
+  border-color: color-mix(in srgb, var(--color-danger) 45%, var(--color-border));
+  background: color-mix(in srgb, var(--color-danger) 7%, var(--color-surface));
+}
+.status-banner.busy {
+  border-color: color-mix(in srgb, var(--color-accent) 35%, var(--color-border));
+  background: color-mix(in srgb, var(--color-accent) 7%, var(--color-surface));
+}
+.status-banner.busy .spinner {
+  margin-left: var(--space-1);
+  color: var(--color-accent);
+}
+.status-banner:focus {
+  outline: none;
+}
+.status-banner > span:nth-child(2) {
+  flex: 1;
+  min-width: 0;
+}
+.status-banner strong,
+.status-banner small {
+  display: block;
+}
+.status-banner small {
+  color: var(--color-muted);
+  overflow-wrap: anywhere;
+}
+.preview {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.preview-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: var(--color-canvas);
+}
+.preview-items {
+  margin: 0;
+  padding: var(--space-1) 0;
+  list-style: none;
+}
+.preview-items li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 44px;
+  padding: var(--space-1) var(--space-3);
+}
+.preview-name {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  flex: 1;
+  min-width: 0;
+}
+.preview-name strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+.preview-name small {
+  flex-shrink: 0;
+  max-width: 40%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-muted);
+  font-size: 0.75rem;
+}
+.preview-quantity {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  flex-shrink: 0;
+  color: var(--color-muted);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+.preview-quantity.empty {
+  color: var(--color-warning);
+}
+.preview-quantity .ui-icon {
+  width: 14px;
+  height: 14px;
+}
+.preview-items .preview-more {
+  min-height: 36px;
+  color: var(--color-muted);
+  font-size: 0.85rem;
+}
+/* Steps in a row: the same marker states set the catalog and the order. */
+.stepper {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.stepper li {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--store-muted, var(--color-muted));
+}
+.stepper li + li::before {
+  content: "";
+  position: absolute;
+  top: 14px;
+  right: calc(50% + 18px);
+  left: calc(-50% + 18px);
+  border-top: 2px solid var(--store-border, var(--color-border));
+}
+.stepper li[data-state="done"] + li::before {
+  border-color: var(--color-success);
+}
+.stepper-marker {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid var(--store-border, var(--color-border));
+  background: var(--store-surface, var(--color-surface));
+  font-size: 0.8rem;
+}
+.stepper-marker .ui-icon {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2.4;
+}
+.stepper [data-state="current"] {
+  color: var(--store-accent, var(--color-accent));
+}
+.stepper [data-state="current"] .stepper-marker {
+  border-color: var(--store-accent, var(--color-accent));
+  background: var(--store-accent, var(--color-accent));
+  color: var(--color-on-accent);
+}
+.stepper [data-state="done"] {
+  color: var(--color-success);
+}
+.stepper [data-state="done"] .stepper-marker {
+  border-color: var(--color-success);
+  background: var(--color-success);
+  color: var(--store-surface, var(--color-surface));
+}
+.stepper [data-state="current"] .stepper-marker {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--store-accent, var(--color-accent)) 22%, transparent);
+}
+.stepper.compact li {
+  font-size: 0.72rem;
+}
+.stepper.compact .stepper-marker {
+  width: 24px;
+  height: 24px;
+  font-size: 0.72rem;
+}
+.stepper.compact li + li::before {
+  top: 11px;
+  right: calc(50% + 15px);
+  left: calc(-50% + 15px);
+}
+.stepper [data-state="problem"] {
+  color: var(--color-danger);
+}
+.stepper [data-state="problem"] .stepper-marker {
+  border-color: var(--color-danger);
+  background: color-mix(in srgb, var(--color-danger) 10%, var(--store-surface, var(--color-surface)));
+}
+.style-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+.style-table td {
+  padding: 4px 0;
+  vertical-align: middle;
+}
+.style-table tr + tr td {
+  border-top: 1px solid var(--color-border);
+}
+.style-example {
+  padding-inline: var(--space-3) !important;
+  white-space: nowrap;
+  color: var(--color-muted);
+}
+.style-table td:last-child {
+  width: 1%;
+  text-align: right;
+}
+.style-table .icon-button {
+  border: 0;
+  background: transparent;
+  color: var(--color-accent);
+}
+.swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 6px;
+  vertical-align: -1px;
+  border-radius: 3px;
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 15%);
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.chip {
+  min-height: 36px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: 99px;
+  background: var(--color-canvas);
+  color: var(--color-text);
+  font-size: 0.76rem;
+}
+@media (hover: hover) {
+  .chip:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+}
+.form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+.form-actions .help-host {
+  margin-right: auto;
+}
+.form-actions .button {
+  min-width: 128px;
+}
+@media (min-width: 900px) {
+  .app-shell {
+    display: grid;
+    grid-template-columns: 200px minmax(0, 1fr);
+  }
+  .app-shell:has(#welcome:not([hidden])) {
+    display: block;
+  }
+  .sidebar {
+    height: 100dvh;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: var(--space-5);
+    padding: var(--space-5) var(--space-3) var(--space-3);
+    border-right: 1px solid var(--color-border);
+    border-bottom: 0;
+  }
+  .app-shell:has(#welcome:not([hidden])) .sidebar {
+    height: auto;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-4) var(--space-5);
+    border: 0;
+  }
+  .nav {
+    position: static;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+  .nav-button {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: var(--space-3);
+    min-height: 40px;
+    padding: 0 var(--space-3);
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+  }
+  .nav-button .ui-icon {
+    width: 18px;
+    height: 18px;
+  }
+  .nav-button[aria-current="page"] {
+    background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+  }
+  .sidebar-foot {
+    margin-top: auto;
+    justify-content: center;
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-border);
+  }
+  .app-shell:has(#welcome:not([hidden])) .sidebar-foot {
+    padding: 0;
+    border: 0;
+  }
+  .management-main {
+    padding: var(--space-6) var(--space-6) var(--space-7);
+  }
+  .pairing-surface {
+    grid-template-columns: auto minmax(0, 1fr);
+    justify-items: stretch;
+    align-items: center;
+  }
+  .pairing-surface:has(> .qr[hidden]) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Storefront. It reads like a spreadsheet: hairline grid lines, grey header cells,
+   numbered rows, a green active cell. Light and dark are two palettes of the same
+   variables. Merchants restyle it through the --store-* variables and the stable
+   classes listed in the HTTP reference. Their CSS loads after this file. */
+.store {
+  --color-canvas: #f8f9fa;
+  --color-surface: #ffffff;
+  --color-raised: #f1f3f4;
+  --color-text: #202124;
+  --color-muted: #5f6368;
+  --color-border: #dadce0;
+  --color-accent: #188038;
+  --color-on-accent: #ffffff;
+  --color-success: #137333;
+  --color-danger: #c5221f;
+  --color-warning: #8d4b00;
+  --color-info: #1a73e8;
+  --color-shadow: rgb(60 64 67 / 20%);
+  --color-backdrop: rgb(32 33 36 / 50%);
+  --sheet-head: #f1f3f4;
+  --sheet-grid: #dadce0;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --store-accent: var(--color-accent);
+  --store-background: var(--color-canvas);
+  --store-surface: var(--color-surface);
+  --store-text: var(--color-text);
+  --store-muted: var(--color-muted);
+  --store-border: var(--color-border);
+  --store-radius: var(--radius-md);
+  --store-font: Roboto, "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  background: var(--store-background);
+  color: var(--store-text);
+  font-family: var(--store-font);
+}
+:root[data-theme="dark"] .store {
+  --color-canvas: #202124;
+  --color-surface: #292a2d;
+  --color-raised: #35363a;
+  --color-text: #e8eaed;
+  --color-muted: #a0a5ab;
+  --color-border: #444649;
+  --color-accent: #81c995;
+  --color-on-accent: #0b2e17;
+  --color-success: #81c995;
+  --color-danger: #f28b82;
+  --color-warning: #fdd663;
+  --color-info: #8ab4f8;
+  --color-shadow: rgb(0 0 0 / 50%);
+  --color-backdrop: rgb(0 0 0 / 60%);
+  --sheet-head: #303134;
+  --sheet-grid: #444649;
+}
+.store :is(.topbar, dialog, .product-card, .price-panel, .facts, .pay-card, .cart-sheet, .cart-group, .sheet-table, .order-lines, .delivery-card) {
+  border-color: var(--store-border);
+}
+.store :is(.topbar, .product-card, .price-panel, .facts, .pay-card, .cart-sheet, .order-lines, .delivery-card, dialog) {
+  background: var(--store-surface);
+}
+.store :is(dialog, .product-card, .price-panel, .facts, .pay-card, .cart-sheet, .order-lines, .delivery-card, .gallery-main, .cart-group) {
+  border-radius: var(--store-radius);
+}
+.store :is(.muted, .caption, .help-content) {
+  color: var(--store-muted);
+}
+.store .button:not(.secondary, .tertiary, .danger) {
+  background: var(--store-accent);
+}
+.store :is(.store-website, .button.tertiary, .empty-icon, .back-link) {
+  color: var(--store-accent);
+}
+.store :is(input, .copy-value) {
+  background-color: var(--store-surface);
+  color: var(--store-text);
+  border-color: var(--store-border);
+}
+.store :where(.icon-button, .button.secondary) {
+  background-color: var(--store-surface);
+  color: var(--store-text);
+  border-color: var(--store-border);
+}
+
+/* The bar on top: the store's mark and name, then the theme, orders and bag. */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  padding-top: env(safe-area-inset-top);
+  border-bottom: 1px solid var(--color-border);
+  background: color-mix(in srgb, var(--store-surface, var(--color-surface)) 94%, transparent);
+  backdrop-filter: blur(12px);
+}
+.topbar-inner {
+  max-width: 1120px;
+  min-height: 56px;
+  margin: auto;
+  padding: var(--space-1) var(--space-2) var(--space-1) var(--edge);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+.store-brand {
+  font-size: 1.1rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--store-text);
+}
+.store-mark {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  fill: var(--store-accent);
+  stroke: var(--store-surface);
+  stroke-width: 1.4;
+}
+.store-header .icon-button {
+  border-color: transparent;
+  background: transparent;
+}
+.toolbar-button {
+  position: relative;
+  gap: 6px;
+  padding: 0 var(--space-3);
+}
+.toolbar-button .label {
+  font-size: 0.88rem;
+}
+@media (max-width: 519px) {
+  .toolbar-button .label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .toolbar-button {
+    padding: 0;
+  }
+}
+#cart-count {
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 99px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 20px;
+  text-align: center;
+  background: var(--store-accent);
+  color: var(--color-on-accent);
+}
+@media (max-width: 519px) {
+  #cart-count {
+    position: absolute;
+    top: 2px;
+    right: 0;
+  }
+}
+#cart-count[data-count="0"] {
+  display: none;
+}
+.store-main {
+  max-width: 1120px;
+  margin: auto;
+  padding: var(--space-4) var(--edge) calc(var(--space-7) + env(safe-area-inset-bottom));
+}
+.store-main:focus {
+  outline: none;
+}
+.store-hero {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+  margin-bottom: var(--space-4);
+  color: var(--store-muted);
+}
+.store-hero p {
+  max-width: 65ch;
+  white-space: pre-line;
+}
+.store-website {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+.store-website .ui-icon {
+  width: 15px;
+  height: 15px;
+}
+
+/* The formula bar over the grid: search, how many products, the view switch. */
+.catalog-tools {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+.search-field {
+  position: relative;
+  display: block;
+  flex: 1;
+  min-width: 0;
+}
+.search-field .search-icon {
+  position: absolute;
+  left: var(--space-3);
+  top: 0;
+  bottom: 0;
+  display: grid;
+  place-items: center;
+  color: var(--store-muted);
+  pointer-events: none;
+}
+.search-field input {
+  padding-left: 40px;
+}
+.catalog-count {
+  margin-left: auto;
+  font-size: 0.82rem;
+  color: var(--store-muted);
+  white-space: nowrap;
+}
+.catalog-tools .segmented {
+  background: var(--sheet-head);
+  border: 1px solid var(--store-border);
+}
+.catalog-tools .segmented > button {
+  padding: 0 var(--space-3);
+}
+.catalog-tools .segmented > [aria-pressed="true"] {
+  background: var(--store-surface);
+  color: var(--store-accent);
+  box-shadow: 0 1px 2px var(--color-shadow);
+}
+@media (max-width: 519px) {
+  .catalog-tools .segmented > button {
+    font-size: 0;
+    gap: 0;
+    width: var(--control);
+    padding: 0;
+  }
+  .catalog-tools .segmented .ui-icon {
+    width: 20px;
+    height: 20px;
+  }
+  .catalog-count {
+    display: none;
+  }
+}
+
+/* Products: each card is a small sheet, the photo over rows of cells. */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr));
+  gap: var(--space-3);
+}
+.product-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--store-border);
+  color: var(--store-text);
+  text-decoration: none;
+}
+@media (hover: hover) {
+  .product-card:hover {
+    border-color: var(--store-accent);
+    box-shadow: 0 0 0 1px var(--store-accent), 0 4px 14px var(--color-shadow);
+  }
+}
+.product-card:focus-visible {
+  outline: 2px solid var(--store-accent);
+  outline-offset: 2px;
+}
+.product-media,
+.gallery-main {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--sheet-head);
+  color: var(--store-muted);
+}
+.product-media img,
+.gallery-main img,
+.gallery-thumbs img,
+.thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.product-media > .ui-icon,
+.gallery-main > .ui-icon {
+  width: 36px;
+  height: 36px;
+}
+.sold-out .product-media img {
+  opacity: 0.4;
+}
+.product-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+.product-title {
+  padding: var(--space-3) var(--space-3) var(--space-2);
+  font-size: 0.95rem;
+  font-weight: 500;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.product-meta {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  margin-top: auto;
+  border-top: 1px solid var(--store-border);
+  font-size: 0.82rem;
+}
+.cell {
+  padding: 6px var(--space-3);
+  overflow-wrap: anywhere;
+}
+.cell + .cell {
+  border-left: 1px solid var(--store-border);
+}
+.product-price {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.stock {
+  background: var(--sheet-head);
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--store-muted);
+}
+.stock.low {
+  color: var(--color-warning);
+}
+.stock.out {
+  color: var(--color-danger);
+}
+.product-tokens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 6px var(--space-3);
+  border-top: 1px solid var(--store-border);
+}
+.token-chip,
+.token-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 1px 7px;
+  border: 1px solid var(--store-border);
+  border-radius: 99px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--store-muted);
+}
+.token-chip::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--tone, var(--store-muted));
+}
+/* List view: one row per product, the title then cells sized to what they hold. */
+.product-grid.product-list {
+  grid-template-columns: 1fr;
+  gap: var(--space-2);
+}
+.product-list .product-card {
+  flex-direction: row;
+  align-items: stretch;
+}
+.product-list .product-media {
+  width: 72px;
+  aspect-ratio: auto;
+  flex-shrink: 0;
+}
+.product-list .product-body {
+  min-width: 0;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.product-list .product-title {
+  flex: 1 1 200px;
+  min-width: 0;
+  padding: var(--space-2) var(--space-3);
+}
+.product-list .product-meta {
+  display: flex;
+  align-self: stretch;
+  margin: 0;
+  border-top: 0;
+}
+.product-list .product-meta .cell {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  border-left: 1px solid var(--store-border);
+}
+.product-list .product-price {
+  justify-content: flex-end;
+  min-width: 72px;
+  white-space: nowrap;
+}
+.product-list .stock {
+  min-width: 112px;
+}
+.product-list .product-tokens {
+  align-self: stretch;
+  align-items: center;
+  flex-wrap: nowrap;
+  border-top: 0;
+  border-left: 1px solid var(--store-border);
+}
+@media (max-width: 759px) {
+  .product-list .product-title {
+    flex-basis: 100%;
+    padding-bottom: 2px;
+  }
+  .product-list .product-meta .cell:first-child {
+    border-left: 0;
+  }
+  .product-list .product-meta .cell {
+    padding-top: 2px;
+    padding-bottom: var(--space-2);
+  }
+  .product-list .stock {
+    min-width: 0;
+    background: none;
+  }
+  .product-list .product-price {
+    min-width: 0;
+  }
+  .product-list .product-tokens {
+    display: none;
+  }
+}
+.catalog-empty,
+.loading-text {
+  grid-column: 1 / -1;
+}
+.loading-text {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-6);
+}
+
+/* One product. Wide: the photos with the description and facts under them on the left,
+   a compact buy column on the right (back link, title, price, token and network chips,
+   quantity and Add to bag) that stays in view while the left side scrolls.
+   Narrow: one column, the buy bar pinned to the bottom edge. */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 6px;
+  min-height: 32px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+.back-link .ui-icon {
+  width: 16px;
+  height: 16px;
+}
+.product-layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+/* Narrow: both columns dissolve so their parts can be ordered in one column. */
+.product-main,
+.product-info {
+  display: contents;
+}
+.product-info > .back-link { order: 0; }
+.gallery { order: 1; }
+.product-info > h1 { order: 2; }
+#product-status { order: 3; }
+.price-panel { order: 4; }
+.product-about { order: 5; }
+.product-action { order: 6; }
+#product-status:empty {
+  display: none;
+}
+.product-about {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+}
+.section-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--store-muted);
+}
+.gallery {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+.gallery-main {
+  max-height: min(70vh, 560px);
+  border: 1px solid var(--store-border);
+  touch-action: pan-y;
+}
+.gallery-main:has(> .ui-icon) {
+  aspect-ratio: auto;
+  height: 112px;
+}
+.gallery-main:focus-visible {
+  outline: 2px solid var(--store-accent);
+  outline-offset: 2px;
+}
+.gallery-thumbs {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  padding: 3px;
+}
+.gallery-thumbs:empty {
+  display: none;
+}
+.gallery-thumbs button {
+  flex: 0 0 auto;
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  overflow: hidden;
+  border: 2px solid var(--store-border);
+  border-radius: var(--radius-sm);
+  background: var(--sheet-head);
+}
+.gallery-thumbs button:has(> .ui-icon) {
+  display: none;
+}
+.gallery-thumbs [aria-pressed="true"] {
+  border-color: var(--store-accent);
+  box-shadow: 0 0 0 1px var(--store-accent);
+}
+.product-info h1 {
+  margin-top: calc(var(--space-2) * -1);
+  font-size: clamp(1.35rem, 3.6vw, 1.75rem);
+  line-height: 1.25;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+.product-info h1:focus {
+  outline: none;
+}
+.price-panel,
+.facts {
+  overflow: hidden;
+  border: 1px solid var(--store-border);
+}
+.panel-title {
+  padding: 6px var(--space-4);
+  border-bottom: 1px solid var(--store-border);
+  background: var(--sheet-head);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--store-muted);
+}
+.price {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4) var(--space-4);
+}
+.price-main {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  font-variant-numeric: tabular-nums;
+}
+.price-main strong {
+  font-size: clamp(1.7rem, 5vw, 2.1rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+}
+.price-main.long strong {
+  font-size: clamp(1.15rem, 4.5vw, 1.5rem);
+}
+.price-main span {
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--store-muted);
+}
+.price-main .price-network {
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--store-muted);
+}
+.facts {
+  display: grid;
+  margin: 0;
+}
+.fact {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+}
+.fact + .fact {
+  border-top: 1px solid var(--store-border);
+}
+.fact dt {
+  padding: 8px var(--space-3);
+  border-right: 1px solid var(--store-border);
+  background: var(--sheet-head);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--store-muted);
+}
+.fact dd {
+  margin: 0;
+  padding: 8px var(--space-3);
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}
+.fact dd.lines {
+  white-space: pre-line;
+}
+.fact dd.mono {
+  font-size: 0.85rem;
+}
+.order-line small,
+.delivery-head small,
+.cart-name small {
+  display: block;
+  font-weight: 400;
+  color: var(--store-muted);
+}
+.product-description {
+  max-width: 70ch;
+  line-height: 1.65;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+/* The buy bar stays at the bottom edge while the page scrolls: quantity, the exact
+   total in the token picked above, and Add to bag. */
+.product-action {
+  position: sticky;
+  bottom: 0;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas: "qty total" "add add";
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  margin: 0 calc(var(--edge) * -1);
+  padding: var(--space-3) var(--edge) calc(var(--space-3) + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--store-border);
+  background: color-mix(in srgb, var(--store-surface) 96%, transparent);
+  backdrop-filter: blur(10px);
+}
+.product-action .quantity-control {
+  grid-area: qty;
+}
+.buy-total {
+  grid-area: total;
+  justify-self: end;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.product-action .button {
+  grid-area: add;
+}
+.quantity-control {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  border: 1px solid var(--store-border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--store-surface);
+}
+.quantity-control button {
+  border: 0;
+  border-radius: 0;
+  background: var(--sheet-head);
+  color: var(--store-text);
+}
+.quantity-control output,
+.quantity-input {
+  min-width: 40px;
+  text-align: center;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.quantity-input {
+  width: 52px;
+  min-height: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: var(--store-surface);
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+.quantity-input::-webkit-outer-spin-button,
+.quantity-input::-webkit-inner-spin-button {
+  appearance: none;
+  margin: 0;
+}
+.quantity-input:focus-visible {
+  outline: 2px solid var(--store-accent);
+  outline-offset: -2px;
+}
+
+/* The bag's and the orders' title bar: a compact line, small borderless actions. */
+.store :is(#cart-dialog, #history-dialog) > .dialog-body {
+  gap: var(--space-3);
+  padding-top: var(--space-3);
+}
+.store :is(#cart-dialog, #history-dialog) .dialog-heading {
+  gap: var(--space-1);
+  min-height: 36px;
+  margin-right: calc(var(--space-2) * -1);
+}
+.store :is(#cart-dialog, #history-dialog) .dialog-heading > h2 {
+  font-size: 1.05rem;
+}
+.store :is(#cart-dialog, #history-dialog) .dialog-heading .icon-button {
+  width: 32px;
+  min-width: 32px;
+  height: 32px;
+  min-height: 32px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--store-muted);
+}
+.store :is(#cart-dialog, #history-dialog) .dialog-heading .icon-button .ui-icon {
+  width: 18px;
+  height: 18px;
+}
+@media (hover: hover) {
+  .store :is(#cart-dialog, #history-dialog) .dialog-heading .icon-button:not(:disabled):hover {
+    background: var(--sheet-head);
+    color: var(--store-text);
+  }
+}
+@media (pointer: coarse) {
+  .store :is(#cart-dialog, #history-dialog) .dialog-heading .icon-button {
+    width: 40px;
+    min-width: 40px;
+    height: 40px;
+    min-height: 40px;
+  }
+}
+.store :is(#cart-dialog, #history-dialog) .dialog-heading > .row {
+  gap: 2px;
+}
+
+/* The bag: a numbered sheet of lines, then the payment. */
+.cart-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.cart-sheet {
+  counter-reset: row;
+  overflow: hidden;
+  border: 1px solid var(--store-border);
+}
+.cart-row {
+  counter-increment: row;
+  display: grid;
+  grid-template-columns: 28px auto minmax(0, 1fr) auto;
+  grid-template-areas: "num thumb name remove" "num thumb qty price";
+  align-items: center;
+  gap: var(--space-1) var(--space-3);
+  padding: var(--space-3) var(--space-3) var(--space-3) 0;
+}
+.cart-row::before {
+  content: counter(row);
+  grid-area: num;
+  align-self: stretch;
+  display: grid;
+  place-items: center;
+  margin: calc(var(--space-3) * -1) 0;
+  border-right: 1px solid var(--store-border);
+  background: var(--sheet-head);
+  font-size: 0.72rem;
+  color: var(--store-muted);
+}
+.cart-row + .cart-row {
+  border-top: 1px solid var(--store-border);
+}
+.cart-row > .thumb {
+  grid-area: thumb;
+  width: 64px;
+  height: 64px;
+}
+.cart-name {
+  grid-area: name;
+  color: inherit;
+  text-decoration: none;
+}
+.cart-name h3 {
+  font-size: 0.92rem;
+  font-weight: 500;
+}
+.cart-line-price {
+  grid-area: price;
+  text-align: right;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.cart-controls {
+  display: contents;
+}
+.cart-controls .quantity-control {
+  grid-area: qty;
+  justify-self: start;
+}
+.cart-controls .quantity-control button {
+  min-width: 36px;
+  min-height: 36px;
+}
+.cart-controls .quantity-input {
+  width: 44px;
+  height: 36px;
+}
+.cart-controls > .icon-button {
+  grid-area: remove;
+  align-self: start;
+  min-width: 36px;
+  min-height: 36px;
+  border: 0;
+  background: transparent;
+  color: var(--store-muted);
+}
+.thumb {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background: var(--sheet-head);
+  color: var(--store-muted);
+}
+.cart-summary {
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--store-border);
+  background: var(--store-surface);
+}
+@media (min-height: 760px) {
+  .cart-summary {
+    position: sticky;
+    bottom: 0;
+  }
+}
+.cart-summary:empty {
+  display: none;
+}
+.checkout {
+  gap: var(--space-3);
+}
+/* A bag no single asset can pay: one block per payment, each with its own checkout. */
+.cart-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--store-border);
+}
+.cart-group-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  color: var(--store-muted);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+.cart-group-title .ui-icon {
+  width: 16px;
+  height: 16px;
+}
+.cart-group > .checkout {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--store-border);
+}
+/* Pay with: the chosen token and network in one line, the chips under it on demand. */
+.pay-with {
+  min-width: 0;
+  border: 1px solid var(--store-border);
+  border-radius: var(--radius-sm);
+}
+.pay-with-summary {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--space-2);
+  font-weight: 400;
+  min-height: 40px;
+  padding: 4px var(--space-3);
+  list-style: none;
+  cursor: pointer;
+  border-radius: inherit;
+}
+.pay-with-summary::-webkit-details-marker {
+  display: none;
+}
+.pay-with-summary[tabindex="-1"] {
+  cursor: default;
+}
+.pay-with-summary:focus-visible {
+  outline: 2px solid var(--store-accent);
+  outline-offset: 2px;
+}
+.pay-with-summary > .caption {
+  font-size: 0.8rem;
+}
+.pay-with-current {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.pay-with-change {
+  margin-left: auto;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--store-accent);
+}
+.pay-with-summary[tabindex="-1"]::after {
+  display: none;
+}
+.pay-with > .picker {
+  margin-top: 0;
+  max-height: min(40vh, 280px);
+  overflow-y: auto;
+  padding: var(--space-2) var(--space-3) var(--space-3);
+  border-top: 1px solid var(--store-border);
+}
+/* The total reads like a formula bar: a label cell, then the result. */
+.cart-total-row {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--store-border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.cart-total-row .total-label {
+  display: flex;
+  align-items: center;
+  padding: 0 var(--space-3);
+  border-right: 1px solid var(--store-border);
+  background: var(--sheet-head);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--store-muted);
+}
+.cart-total-row .amount {
+  flex: 1;
+  padding: var(--space-2) var(--space-3);
+  font-size: clamp(1.1rem, 4vw, 1.4rem);
+  font-weight: 500;
+  text-align: right;
+}
+
+/* Paying: a row of token chips, then a row of network chips. The amount is the price
+   above (or the bag's total); a chip only shows one where networks charge differently. */
+.picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
+  min-width: 0;
+}
+.picker-step {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  align-items: start;
+  gap: var(--space-2);
+}
+.picker-label {
+  padding-top: 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--store-muted);
+}
+.choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+}
+.choice {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 32px;
+  padding: 3px 12px 3px 10px;
+  border: 1px solid var(--store-border);
+  border-radius: 99px;
+  background: var(--store-surface);
+  cursor: pointer;
+  transition: border-color 0.12s, background-color 0.12s;
+}
+.choice input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: inherit;
+}
+.choice:has(:checked) {
+  border-color: var(--store-accent);
+  box-shadow: inset 0 0 0 1px var(--store-accent);
+  background: color-mix(in srgb, var(--store-accent) 10%, var(--store-surface));
+}
+.choice:has(:focus-visible) {
+  outline: 2px solid var(--store-accent);
+  outline-offset: 2px;
+}
+.choice:has(:disabled) {
+  opacity: 0.6;
+  cursor: progress;
+}
+@media (hover: hover) {
+  .choice:not(.fixed, :has(:checked, :disabled)):hover {
+    border-color: color-mix(in srgb, var(--store-accent) 60%, var(--store-border));
+    background: var(--sheet-head);
+  }
+}
+.choice.fixed {
+  align-self: flex-start;
+  cursor: default;
+  background: var(--sheet-head);
+}
+.choice > .ui-icon {
+  display: none;
+}
+/* A tone dot: round for a token, square for a network. */
+.badge {
+  width: 9px;
+  height: 9px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--tone, #5f6368);
+  font-size: 0;
+  color: transparent;
+}
+.badge.net {
+  border-radius: 2px;
+}
+.choice-text {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+  line-height: 1.25;
+}
+.choice-name {
+  font-size: 0.86rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.choice:has(:checked) .choice-name {
+  font-weight: 700;
+}
+.choice-price {
+  font-size: 0.76rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--store-muted);
+  white-space: nowrap;
+}
+.choice-tag {
+  padding: 0 6px;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--color-success) 14%, transparent);
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: var(--color-success);
+}
+@media (pointer: coarse) {
+  .choice {
+    min-height: 40px;
+  }
+  .picker-label {
+    padding-top: 12px;
+  }
+}
+/* One colour per network and token, the same dot everywhere it appears. */
+:is(.badge, .token-chip, .network)[data-tone="ethereum"] { --tone: #4a5fc1; }
+:is(.badge, .token-chip, .network)[data-tone="base"] { --tone: #0052ff; }
+:is(.badge, .token-chip, .network)[data-tone="arbitrum"] { --tone: #1668b5; }
+:is(.badge, .token-chip, .network)[data-tone="polygon"] { --tone: #7a3fd1; }
+:is(.badge, .token-chip, .network)[data-tone="optimism"] { --tone: #d9122b; }
+:is(.badge, .token-chip, .network)[data-tone="usdc"] { --tone: #2775ca; }
+:is(.badge, .token-chip, .network)[data-tone="usdt"] { --tone: #0f8a6c; }
+:is(.badge, .token-chip, .network)[data-tone="dai"] { --tone: #9a5700; }
+:is(.badge, .token-chip, .network)[data-tone="n0"] { --tone: #0b7a6b; }
+:is(.badge, .token-chip, .network)[data-tone="n1"] { --tone: #b45309; }
+:is(.badge, .token-chip, .network)[data-tone="n2"] { --tone: #b8286b; }
+:is(.badge, .token-chip, .network)[data-tone="n3"] { --tone: #5f6368; }
+:is(.badge, .token-chip, .network)[data-tone="n4"] { --tone: #6d4fc2; }
+:is(.badge, .token-chip, .network)[data-tone="n5"] { --tone: #1a7f37; }
+
+.resume {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
+  border: 1px solid color-mix(in srgb, var(--store-accent) 40%, var(--store-border));
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--store-accent) 8%, var(--store-surface));
+  font-weight: 500;
+}
+.resume > span:nth-child(2) {
+  flex: 1;
+  min-width: 0;
+}
+.resume .ui-icon {
+  color: var(--store-accent);
+}
+
+/* An order: the steps, its status, the payment sheet, then the lines. */
+.order-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-width: 760px;
+  margin: 0 auto;
+}
+.order-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+/* The order's number and its status chip share the heading line. */
+.order-title {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-3);
+  min-width: 0;
+}
+.order-head h2 {
+  font-size: 1.15rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.order-title .status-chip {
+  align-self: center;
+}
+.order-head h2:focus {
+  outline: none;
+}
+.order-head .icon-button {
+  border-color: transparent;
+  background: transparent;
+}
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 7px;
+  margin: 0;
+  padding: 3px 12px;
+  border-radius: 99px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--tone, var(--store-muted));
+  background: color-mix(in srgb, var(--tone, var(--store-muted)) 13%, transparent);
+}
+.status-chip::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.status-chip:empty {
+  display: none;
+}
+.status-chip[data-tone="success"] { --tone: var(--color-success); }
+.status-chip[data-tone="pending"] { --tone: var(--color-info); }
+.status-chip[data-tone="warning"] { --tone: var(--color-warning); }
+.status-chip[data-tone="danger"] { --tone: var(--color-danger); }
+.order-help {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--store-muted);
+}
+.order-help[data-tone="problem"] {
+  color: var(--color-danger);
+}
+/* Paying: the details on the left, the QR code in its own card on the right (under
+   them on a narrow screen). */
+.pay-area {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3);
+  align-items: start;
+}
+.pay-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--store-border);
+}
+.pay-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  margin: 0;
+  padding: 10px var(--space-4);
+}
+.pay-row + .pay-row {
+  border-top: 1px solid var(--store-border);
+}
+.pay-heading,
+.pay-amount {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-3);
+}
+.pay-heading {
+  padding-top: 6px;
+  padding-bottom: 6px;
+  background: var(--sheet-head);
+}
+.pay-network {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.pay-network .caption {
+  font-size: 0.8rem;
+}
+/* "To" and the address on one line. */
+.pay-to {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-3);
+}
+.pay-to > .caption {
+  flex: none;
+  min-width: 1.5em;
+  font-size: 0.8rem;
+}
+.pay-to .copy-value {
+  flex: 1;
+  min-width: 0;
+}
+.pay-heading .caption {
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+}
+.countdown {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--store-text);
+}
+.pay-amount .amount {
+  display: inline-flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  font-size: clamp(1.4rem, 5vw, 1.75rem);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+/* The amount with a small copy icon right after it. */
+.amount-line {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-width: 0;
+}
+.unit {
+  font-size: 0.55em;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--store-muted);
+}
+.network {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 3px 11px;
+  border: 1px solid var(--store-border);
+  border-radius: 99px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--store-text);
+}
+.network::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--tone, var(--store-accent));
+}
+progress {
+  width: 100%;
+  height: 8px;
+  appearance: none;
+  border: 0;
+  border-radius: 99px;
+  overflow: hidden;
+  background: var(--sheet-head);
+  accent-color: var(--store-accent);
+}
+progress::-webkit-progress-bar {
+  background: var(--sheet-head);
+}
+progress::-webkit-progress-value {
+  background: var(--store-accent);
+  border-radius: 99px;
+}
+progress::-moz-progress-bar {
+  background: var(--store-accent);
+  border-radius: 99px;
+}
+.pay-row.note {
+  align-items: flex-start;
+  flex-direction: row;
+  gap: var(--space-2);
+  padding-top: 8px;
+  padding-bottom: 8px;
+  border-radius: 0;
+  background: color-mix(in srgb, var(--color-warning) 9%, transparent);
+  font-size: 0.82rem;
+}
+.pay-row.note .ui-icon {
+  width: 16px;
+  height: 16px;
+  margin-top: 1px;
+}
+.qr-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  justify-self: center;
+  margin: 0;
+  padding: var(--space-3);
+  border: 1px solid var(--store-border);
+  border-radius: var(--store-radius);
+  background: var(--store-surface);
+}
+.qr-card[hidden] {
+  display: none;
+}
+.qr-card .qr {
+  width: 156px;
+  height: auto;
+  margin: 0;
+  border-radius: var(--radius-sm);
+}
+.qr-card figcaption {
+  font-size: 0.76rem;
+}
+/* The address and its copy button: room between them and even insets in the box. */
+.copy-value.address {
+  gap: var(--space-2);
+  padding: 2px 2px 2px var(--space-3);
+}
+/* One monospace line. The first six and last four characters always show, only the
+   muted middle gives way, ending in an ellipsis, when the line is too narrow. Copy
+   and the accessible name always carry the full address. */
+.address code {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  letter-spacing: 0;
+  white-space: nowrap;
+  color: var(--store-muted);
+}
+.address code b {
+  flex: none;
+  font-weight: 700;
+  color: var(--store-text);
+}
+.address code span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.order-lines {
+  counter-reset: row;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow: hidden;
+  border: 1px solid var(--store-border);
+}
+.order-line {
+  counter-increment: row;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3) var(--space-2) 0;
+}
+.order-line::before {
+  content: counter(row);
+  align-self: stretch;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  margin: calc(var(--space-2) * -1) 0;
+  border-right: 1px solid var(--store-border);
+  background: var(--sheet-head);
+  font-size: 0.72rem;
+  color: var(--store-muted);
+}
+.order-line + .order-line {
+  border-top: 1px solid var(--store-border);
+}
+.order-line > span:nth-child(2) {
+  flex: 1;
+  min-width: 0;
+  font-weight: 500;
+}
+.order-line strong,
+.order-total strong {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.order-total {
+  padding: 0 var(--space-3);
+  font-weight: 500;
+}
+.delivery-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid color-mix(in srgb, var(--color-success) 40%, var(--store-border));
+}
+.delivery-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-weight: 500;
+}
+.delivery-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+.delivery {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  padding: var(--space-3);
+  border: 1px solid var(--store-border);
+  border-radius: var(--radius-sm);
+  background: var(--sheet-head);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.85rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* Orders in this browser: a sheet with a status chip per row. */
+.history {
+  overflow-x: auto;
+}
+.sheet-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--store-border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  font-size: 0.88rem;
+}
+.sheet-table :is(th, td) {
+  padding: 8px var(--space-3);
+  border-bottom: 1px solid var(--store-border);
+  text-align: left;
+  vertical-align: middle;
+}
+.sheet-table tr:last-child :is(th, td) {
+  border-bottom: 0;
+}
+.sheet-table :is(th, td) + :is(th, td) {
+  border-left: 1px solid var(--store-border);
+}
+.sheet-table thead th {
+  background: var(--sheet-head);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--store-muted);
+}
+.sheet-table tbody th {
+  font-weight: 500;
+  background: var(--sheet-head);
+}
+.sheet-table .number {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.text-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 0 var(--space-1);
+  border: 0;
+  background: transparent;
+  color: var(--store-accent);
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.text-button .ui-icon {
+  width: 14px;
+  height: 14px;
+}
+.history-table .status-chip {
+  padding: 1px 10px;
+  font-size: 0.78rem;
+}
+@media (max-width: 519px) {
+  .history-table .wide-only {
+    display: none;
+  }
+}
+@media (min-width: 640px) {
+  dialog.wide {
+    width: min(640px, calc(100% - 24px));
+  }
+  .product-grid:not(.product-list) {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+    gap: var(--space-4);
+  }
+  .pay-area:has(> .qr-card:not([hidden])) {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .qr-card {
+    align-self: stretch;
+    justify-content: center;
+  }
+  .product-action {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas: "qty total add";
+  }
+}
+@media (min-width: 760px) {
+  .product-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 400px);
+    gap: var(--space-6);
+    align-items: start;
+  }
+  .product-main,
+  .product-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    min-width: 0;
+  }
+  .product-main {
+    gap: var(--space-5);
+  }
+  .product-info {
+    gap: var(--space-3);
+  }
+  .store-main {
+    padding-top: var(--space-5);
+  }
+  /* The buy column is a card: the price and chips, then quantity, total and Add. */
+  .store .price-panel:has(+ .product-action:not([hidden])) {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+  .product-action {
+    position: static;
+    margin: calc(var(--space-3) * -1) 0 0;
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--store-border);
+    border-radius: 0 0 var(--store-radius) var(--store-radius);
+    background: var(--sheet-head);
+    backdrop-filter: none;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas: "qty total" "add add";
+  }
+}
+@media (min-width: 760px) and (min-height: 640px) {
+  .product-info {
+    position: sticky;
+    top: calc(56px + env(safe-area-inset-top) + var(--space-4));
+  }
+}
+@media (pointer: coarse) {
+  :root {
+    --control: 48px;
+  }
+  .button.small {
+    min-height: var(--control);
+  }
+  .cart-controls .quantity-control button,
+  .cart-controls > .icon-button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .cart-controls .quantity-input {
+    height: 44px;
+  }
+}
+
+/* Motion */
+.page:not([hidden]),
+.order-panel:not([hidden]),
+.product-page:not([hidden]) {
+  animation: surface-in 0.18s ease-out;
+}
+dialog[open] {
+  animation: sheet-in 0.22s ease-out;
+}
+@keyframes sheet-in {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+}
+@keyframes surface-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+  :is(button, .button)[aria-busy="true"]::before,
+  .spinner {
+    animation: spin 1.6s linear infinite !important;
+  }
+}
+
+/* The creation page is a small sheet, like the logo: gray row numbers, white cells on
+   a hairline grid, the active cell outlined in the accent, and green for the cell that
+   creates. The formula bar shows the active row's hint. */
+.row-head {
+  display: grid;
+  place-items: center;
+  background: var(--sheet-head);
+  color: var(--sheet-head-text);
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  transition: background-color 0.15s, color 0.15s;
+}
+.sheet {
+  display: grid;
+  gap: 1px;
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--sheet-grid);
+  border-radius: var(--radius-md);
+  background: var(--sheet-grid);
+  box-shadow: 0 1px 3px var(--color-shadow);
+  text-align: left;
+}
+.formula-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3) var(--space-2) 0;
+  background: var(--sheet-cell);
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: var(--color-muted);
+}
+.formula-bar > span:last-child {
+  display: flex;
+  align-items: center;
+  /* Two lines tall, so a longer hint doesn't move the rows below. */
+  min-height: 2.8em;
+}
+.fx {
+  display: grid;
+  place-items: center;
+  align-self: stretch;
+  width: 2.25rem;
+  flex-shrink: 0;
+  margin-block: calc(-1 * var(--space-2));
+  border-right: 1px solid var(--sheet-grid);
+  font-family: Georgia, "Times New Roman", serif;
+  font-style: italic;
+  color: var(--sheet-head-text);
+}
+.formula-bar.done {
+  color: var(--color-text);
+}
+.formula-bar.done .fx {
+  color: var(--sheet-green);
+}
+.formula-bar.done .ui-icon {
+  width: 18px;
+  height: 18px;
+}
+.formula-bar.done strong {
+  min-height: 0;
+  font-size: 0.95rem;
+}
+.sheet-row {
+  display: grid;
+  grid-template-columns: 2.25rem minmax(0, 1fr);
+  min-height: 3.5rem;
+  background: var(--sheet-cell);
+}
+.cell {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  min-width: 0;
+  padding: var(--space-2) var(--space-3);
+  background: var(--sheet-cell);
+  transition: box-shadow 0.15s;
+}
+/* A small link under a cell's value, e.g. to make the sheet the row asks for. */
+.cell-link {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 28px;
+  font-size: 0.8rem;
+  font-weight: 550;
+  text-decoration: none;
+}
+.cell-link .ui-icon {
+  width: 0.95em;
+  height: 0.95em;
+}
+@media (hover: hover) {
+  .cell-link:hover {
+    text-decoration: underline;
+  }
+}
+.cell-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-muted);
+}
+/* Inputs are the cell itself: no box of their own. */
+.cell :is(input, .input-actions, .copy-value) {
+  min-height: 2rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none !important;
+}
+.cell input:is(:focus, :focus-visible) {
+  outline: none;
+}
+.cell :is(.copy-value, .input-actions) {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+/* Addresses break after their dots (app.js marks them), else wherever they must. */
+.cell .copy-value :is(code, a),
+#store-local {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  overflow-wrap: anywhere;
+}
+.cell .icon-button {
+  min-height: 2rem;
+  min-width: 2rem;
+  margin-right: calc(-1 * var(--space-2));
+}
+/* Fingers get full-size targets. */
+@media (pointer: coarse) {
+  .cell .icon-button {
+    min-height: var(--control);
+    min-width: var(--control);
+    margin-block: -6px;
+  }
+  .cell.actions :is(.button, .icon-button) {
+    min-height: var(--control);
+    margin-block: 0;
+  }
+}
+/* The stores' address follows the name, or goes below it when the row is narrow. */
+.cell .input-actions {
+  flex-wrap: wrap;
+  row-gap: 0;
+}
+.cell .input-actions input {
+  flex: 1 1 7rem;
+}
+.cell .input-actions .muted {
+  flex: 0 1 auto;
+  min-width: 0;
+  padding-bottom: var(--space-1);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+/* The active row: its number darkens and its cell is outlined, as in a sheet. */
+.sheet-row:focus-within > .row-head {
+  background: var(--sheet-head-active);
+  color: var(--color-text);
+  font-weight: 700;
+}
+.sheet-row:focus-within > .cell:not(.create-cell) {
+  box-shadow: inset 0 0 0 2px var(--color-accent);
+}
+/* A filled, valid row: its number turns green. One the server refused: red. */
+.sheet-row:has(input:valid:not(:placeholder-shown)):not(:has([aria-invalid="true"])) > .row-head {
+  color: var(--sheet-green);
+}
+/* Refused wins over focus: the row stays red until it is edited. */
+.sheet .sheet-row:has([aria-invalid="true"]) > .row-head {
+  color: var(--color-danger);
+}
+.sheet .sheet-row:has([aria-invalid="true"]) > .cell:not(.create-cell) {
+  box-shadow: inset 0 0 0 2px var(--color-danger);
+}
+@media (hover: hover) {
+  .sheet-row > .cell:not(.create-cell):hover {
+    box-shadow: inset 0 0 0 1px var(--sheet-grid);
+  }
+}
+.create-cell {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 3.25rem;
+  border: 0;
+  border-radius: 0;
+  background: var(--sheet-green);
+  color: var(--sheet-on-green);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+}
+.create-cell:focus-visible {
+  outline: 2px solid var(--sheet-on-green);
+  outline-offset: -6px;
+}
+@media (hover: hover) {
+  .create-cell:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--sheet-green) 88%, #000);
+  }
+}
+.create-cell:disabled {
+  opacity: 1;
+  background: color-mix(in srgb, var(--sheet-green) 70%, var(--sheet-cell));
+}
+/* The page's frame: the logo and the theme on top, the form in the middle, help and
+   the source at the bottom. Help and sample tables open as dialogs. */
+.create-page {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100dvh;
+}
+.create-top,
+.create-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) max(var(--space-4), env(safe-area-inset-right)) var(--space-3)
+    var(--edge);
+}
+.create-top {
+  padding-top: max(var(--space-3), env(safe-area-inset-top));
+}
+.create-foot {
+  align-items: flex-end;
+  padding-bottom: max(var(--space-3), env(safe-area-inset-bottom));
+}
+.create-logo {
+  display: block;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+}
+.create-logo svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+/* The same mark as the favicon and every store's header. */
+.create-mark {
+  fill: var(--sheet-green);
+  stroke: var(--color-surface);
+  stroke-width: 1.4;
+}
+.create-mark rect {
+  stroke: none;
+}
+.welcome-title {
+  display: grid;
+  gap: var(--space-1);
+}
+.welcome-title p {
+  font-size: 0.95rem;
+}
+/* Phones: the two help links stack at the left, the GitHub mark at the right. */
+.foot-links {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.link-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 40px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-muted);
+  font-size: 0.85rem;
+  font-weight: 550;
+}
+.link-button .ui-icon {
+  width: 1.1em;
+  height: 1.1em;
+}
+.github {
+  display: grid;
+  place-items: center;
+  width: var(--control);
+  height: var(--control);
+  border-radius: 50%;
+  color: var(--color-muted);
+}
+.github svg {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+}
+@media (hover: hover) {
+  :is(.link-button, .github):hover {
+    color: var(--color-text);
+  }
+}
+/* Sheets inside dialogs: the same rows, a little tighter. */
+.sheet-dialog .dialog-body > p {
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+.sheet-dialog .sheet-row {
+  min-height: 0;
+}
+.sheet-dialog .cell {
+  font-size: 0.85rem;
+}
+.sheet-row.download {
+  grid-template-columns: 2.25rem minmax(0, 1fr) auto;
+  color: inherit;
+  text-decoration: none;
+}
+.sheet-row.download > .cell > span:last-child {
+  color: var(--color-muted);
+}
+.download-icon {
+  display: grid;
+  place-items: center;
+  padding-inline: var(--space-4);
+  color: var(--color-accent);
+}
+@media (hover: hover) {
+  .sheet-row.download:hover > :is(.cell, .download-icon) {
+    background: color-mix(in srgb, var(--sheet-green) 7%, var(--sheet-cell));
+  }
+}
+.sheet-row.download:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+}
+/* Wider screens: more room around everything, help links side by side. */
+@media (min-width: 640px) {
+  .create-top,
+  .create-foot {
+    padding: var(--space-4) var(--space-5);
+  }
+  .create-foot {
+    align-items: center;
+  }
+  .create-logo {
+    width: 48px;
+    height: 48px;
+  }
+  .foot-links {
+    flex-direction: row;
+    gap: var(--space-5);
+  }
+  .welcome {
+    width: min(500px, 100%);
+    gap: var(--space-6);
+  }
+  .welcome-title h1 {
+    font-size: 2rem;
+  }
+  .welcome-title p {
+    font-size: 1.05rem;
+  }
+  .sheet-row {
+    min-height: 4rem;
+  }
+  .cell {
+    padding: var(--space-3) var(--space-4);
+  }
+  .formula-bar {
+    padding-right: var(--space-4);
+  }
+  .create-cell {
+    min-height: 3.5rem;
+  }
+  .sheet-dialog {
+    width: min(540px, calc(100% - 24px));
+  }
+}
+
+/* The result: the store, the steps left in the sheet, then where to go. */
+.created:focus {
+  outline: none;
+}
+.created .todo .cell {
+  font-size: 0.85rem;
+}
+.created q {
+  font-style: italic;
+}
+/* One line on any phone: the two links share the row, the + keeps its size. */
+.cell.actions {
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: var(--space-2);
+}
+.cell.actions .button {
+  flex: 0 1 auto;
+  min-width: 0;
+  min-height: 40px;
+  padding: 0 var(--space-3);
+  white-space: nowrap;
+}
+.cell.actions .create-cell {
+  border-radius: var(--radius-sm);
+}
+.cell.actions .icon-button {
+  margin-left: auto;
+}

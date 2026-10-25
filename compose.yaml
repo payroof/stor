@@ -1,0 +1,23 @@
+# One hardened Stor service. Put your configuration in ./stortop.toml (start from
+# config/stortop.example.toml with bind = "0.0.0.0:8081" and database =
+# "sqlite:///data/stortop.sqlite") and the keys in the environment or a .env file.
+#   docker compose up -d        # pulls the release image, or builds it with --build
+services:
+  stor:
+    image: ghcr.io/payroof/stor:0.1.0
+    build: .
+    restart: unless-stopped
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    tmpfs: [/tmp]
+    ports: ["8081:8081"]
+    environment:
+      STORTOP_MASTER_KEY: ${STORTOP_MASTER_KEY:?set STORTOP_MASTER_KEY (32 random bytes, hex)}
+      STORTOP_ALTCHA_KEY: ${STORTOP_ALTCHA_KEY:?set STORTOP_ALTCHA_KEY (32 random bytes, hex)}
+      RUST_LOG: ${RUST_LOG:-info}
+    volumes:
+      - ./stortop.toml:/etc/stortop/stortop.toml:ro
+      - data:/data
+volumes:
+  data:

@@ -1,0 +1,7 @@
+/target/
+.env
+*.sqlite*
+*.log
+.DS_Store
+node_modules/
+/stortop.toml
