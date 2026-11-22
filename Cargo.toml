@@ -15,7 +15,7 @@ rust-version = "1.99"
 license = "MIT OR Apache-2.0"
 [dependencies]
 anyhow = "=1.0.104"
-altcha = "=1.0.0"
+altcha = "=1.1.0"
 axum = { version = "=0.8.9", features = ["multipart"] }
 base64 = "=0.23.1"
 chacha20poly1305 = "=0.11.0"
@@ -29,15 +29,15 @@ reqwest = { version = "=0.13.5", default-features = false, features = ["json", "
 serde = { version = "=1.0.229", features = ["derive"] }
 serde_json = "=1.0.154"
 sha2 = "=0.11.1"
-sqlx = { version = "=0.9.0", default-features = false, features = ["runtime-tokio", "sqlite", "migrate", "macros"] }
-tokio = { version = "=1.53.3", features = ["rt-multi-thread", "macros", "net", "signal", "time"] }
-toml = "=1.1.8"
+sqlx = { version = "=0.9.1", default-features = false, features = ["runtime-tokio", "sqlite", "migrate", "macros"] }
+tokio = { version = "=1.54.1", features = ["rt-multi-thread", "macros", "net", "signal", "time"] }
+toml = "=1.2.1"
 tower = { version = "=0.5.3", features = ["util", "limit"] }
 tracing = "=0.1.44"
 tracing-subscriber = { version = "=0.3.23", features = ["env-filter", "json"] }
 url = "=2.5.8"
-zeroize = { version = "=1.9.1", features = ["derive", "serde"] }
-jsonwebtoken = { version = "=11.1.0", features = ["aws_lc_rs"] }
+zeroize = { version = "=1.9.2", features = ["derive", "serde"] }
+jsonwebtoken = { version = "=12.0.0", features = ["aws_lc_rs"] }
 
 [profile.release]
 opt-level = "z"
